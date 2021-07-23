@@ -1,0 +1,53 @@
+---
+title: "Thesis - Version 1"
+author: "Alexandra Norris"
+date: "7/22/2021"
+header-includes:
+    - \usepackage{setspace}\doublespacing
+output:
+  pdf_document:
+    extra_dependencies: ["float"]
+bibliography: references.bib
+link_citations: true
+---
+
+```{r setup, include=FALSE}
+
+# The below code creates a bibliography and allows for the tables and figures to
+# be placed where I want them to be
+
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(fig.pos = "!H", out.extra = "")
+knitr::write_bib(c("base", "tinytex", "knitr", "kableExtra", "latexpdf", "readtext", "utils", "stargazer", "tidyverse", "sandwich", "lfe", "grid", "RColorBrewer", "rgdal", "rgeos", "maptools", "seg", "splancs", "gridExtra"), "bibliography.bib", width = 60)
+
+# load r packages
+
+library(tinytex)
+library(knitr)
+library(kableExtra)
+library(latexpdf)
+library(readtext)
+library(utils)
+library(bookdown)
+
+# need to load latex package "dcolumn" to allow latex tables to run and package
+# "float" to place tables and figures where I want them to go
+
+usepackage_latex("dcolumn")
+usepackage_latex("float")
+
+```
+
+
+bla bla bla bla ^[@cutter2008place]
+
+
+
+bla bla bla bla bla bla bla
+
+
+
+
+
+## Works Cited
+
