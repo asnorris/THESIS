@@ -2,13 +2,13 @@
 title: "Thesis - Version 1"
 author: "Alexandra Norris"
 date: "7/22/2021"
-header-includes:
-    - \usepackage{setspace}\doublespacing
 output:
   pdf_document:
-    extra_dependencies: ["float"]
+    extra_dependencies: float
+  word_document: default
+link_citations: yes
+header-includes: \usepackage{setspace}\doublespacing
 bibliography: references.bib
-link_citations: true
 ---
 
 ```{r setup, include=FALSE}
@@ -38,15 +38,71 @@ usepackage_latex("float")
 
 ```
 
+# Lit Review
 
-bla bla bla bla ^[@cutter2008place]
+## Overall Intro to the Topic of resilience
+
+The last twenty years have seen a significant rise in the number of climate-related disasters, putting much of the world’s population, in particular those people living in poorer communities at increased risk.  With Earth’s temperature predicted to rise [] in order to prevent unnecessary loss of life and development progress, action must be taken to ensure that at-risk communities are prepared and resilient when disaster strikes. This question inspired my research question: "What allows nations in the developing world to be resilient to exogenous disaster shocks?"
+
+Informed by @cutter2008place, we define resilience as the ability of communities to respond quickly and efficiently to an exogenous disaster in a way in which future risk is reduced. In short, resilience is how quickly and efficiently communities can “build back better”. 
+
+## Operationalizing resilience
+
+Resilience, or building back better includes both short and long-term components. Short term components include deaths and displaced people after the disaster. Medium term components are the ability to rebuild homes, businesses, and crucial infrastructure. The long term component of resilience is the "build back better" component and includes the difficult to measure "ability to sustain a future disaster" variable.  This project mainly focusses on the medium-term rebuilding issues. 
+
+## Observing Resilience
+
+I  focus on how governments respond to natural disasters in developing countries and what makes some more resilient than others. Much research exists on how individual citizens and aid organizations respond to disasters (@sawada2007impact, @drabo2015natural, @sawada2017natural, @rivera2014social) and on disaster responses in both the U.S. () and Japan (@aldrich2015physical, )
+
+, but there is less scholarship on how macro-level government policies impact recovery and future preparedness, specifically in the context of developing nations. In measuring resilience, I focus on two main vectors, 1) the government’s response to the disaster, and 2) how the people respond to the government’s response.  
 
 
 
-bla bla bla bla bla bla bla
+## Why is this a significant 
+
+How do nations respond to natural disasters?
+
+much on developed - China, Japan, US - and on individual activities of people in developing nations - but what about national responses in these countries - it's one thing to not believe in the state, but
 
 
 
+
+
+
+
+
+
+
+# Theory:
+
+## Price Gouging
+
+
+
+
+
+I care about understanding what allows for some countries to be more resiliant in the face of natural disasters than others.
+
+I believe that this resilience is based off of four factors: state capacity, level of democracy, 
+
+A national government's ability to respond to natural disasters requires for a state to have a baseline ability to govern, meaning that 
+
+Democracy is interesting, according to @besley2010state, there is a j-shaped relationship between 
+
+
+
+
+For my thesis I want allows some countries to be more resilient to natural disasters than others.
+
+
+
+
+
+
+
+
+
+\newpage
 
 
 ## Works Cited
