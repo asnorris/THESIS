@@ -1,0 +1,101 @@
+---
+title: "Thesis Proposal Cover Sheet"
+author: "Alexandra Norris"
+date: "9/28/2021"
+output:
+  pdf_document:
+    extra_dependencies: float
+link_citations: yes
+header-includes: \usepackage{setspace}\doublespacing\setlength{\parindent}{4em}\setlength{\parskip}{0em}
+bibliography: references.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# 1: Research Question
+
+Why are some nations more resilient to natural disasters than others? What makes for an effective response and enables them to be more resilient than other nations? I am interested in understanding the role of the state in post-disaster recovery and reconstruction.  More specifically, what conditions enable states to be resilient to exogenous disaster shocks. Informed by @cutter2008place, I define resilience as the ability of communities to respond quickly and efficiently to an exogenous disaster in a way in which previous levels of development are achieved and future risk/vulnerability is reduced.
+
+# 2: Why is this a significant question for political science?
+
+The last twenty years have seen a significant rise in the number of climate-related disasters, putting much of the world’s population, in particular those living in poorer nations and communities at increased risk.  With Earth’s temperature predicted to rise further and with that the frequency of "once in a century" catastrophic weather events, the question of what enables nations to be resilient in the face of these exogenous disaster shocks is more important than ever.
+
+Much scholarly work exists on the topic of natural disasters, but the focus has been largely on post-mortem assessments of disasters striking developed nations like the U.S.^[KATRINA LIT] and Japan^[@aldrich2015physical]. These assessments point to state capacity and social cohesion as the drivers responsible for effective disaster response and suggest that both the government and citizen responses play an important role.
+
+Research on the developing world has mostly focused on individual and private sector responses to disasters^[@sawada2007impact, @drabo2015natural, @sawada2017natural, @rivera2014social], neglecting the roles that centralized states can play in disaster responses. This project builds on the work of @lin_governing_2015 which examines the relationship between the state and disaster vulnerability, finding evidence that democracy and strong state capacity reduce disaster-related mortality among citizens. Focusing not on disaster vulnerability, but instead disaster resilience, this project seeks to examine the rebuilding process following natural disasters in the developing world.  
+
+# 3: Data and Methods
+
+## Data
+
+* EM-DAT Disaster Data^[@emdat] - This dataset includes most natural disasters that happened between 1960 and 2018. It contains the number of deaths, and the estimated economic losses created by each disaster
+* AID Data^[@TIERNEY2011] - This dataset gives detailed information on foreign aid and disaster relief
+* Potentially satellite data on housing stock and roads - this will be used to quantify the dependent variable of how long it takes to rebuild
+* Numerous World Bank indicators, and WVS survey for information on the state capacity variables - they are too numerous to list here
+
+## Methods
+
+* A large n study where I compare countries that were resilient to those that were less so and see if any of my IVs account for these differences. Either a normal regression or use diff-in-diff to compare how the exogenous disaster shock impacts the DVs for both groups.
+
+* A paired-comparison with two similar countries that had differing levels of resilience to the same disaster (only if the disaster was equally strong in both places) - OR compare two similar countries that had different levels of resilience to similar disasters
+
+* Case study of one country that experienced two or more disasters to see whether governmental changes impacted the response – Haiti jumps to mind as an option.
+
+* I also reached out to a few disaster response experts and hopefully will be able to chat with them.
+
+## Measuring Recovery
+
+To measure recovery, I want to focus on how long it takes to rebuild roads and houses. In my exploration of the literature, I realized that in the developing world, most of the rebuilding process is donor-driven^[@steinberg2007housing, @nazara2007aceh, @chang2010resourcing], meaning that it is conducted by NGOs and aid organizations. Because of this, I can leverage the Aid Data dataset which contains some of these NGO-led rebuilding projects and connect it to the EM-DAT disaster data. Both of these datasets provide proximate location data on the admin 1 and sometimes admin 2 levels, meaning that I will be able to look at local responses. Because the Aid Data has start and end dates for projects, I will be able to measure how long it took to rebuild by looking at that.
+
+## Measuring Future Risk Protection
+
+My definition of resilience in the face of natural disasters includes communities being built back in a way in which future risk to similar disasters is reduced. Because the EM-DAT data ranges such a large time period, and contains the number of deaths, and the estimated economic losses created by the disaster. I plan to select for specific areas that experienced two very similar disasters and compare the death and loss numbers. If the second time around the area has fewer deaths and losses it was successfully able to mitigate future risk.
+
+# 4: My Progress thus far
+
+So far, I have created a fairly comprehensive literature review and started on my theory section. I have identified potential data sources but have not conducted any analysis yet.
+
+My project has evolved a lot from initially wanting to look at COVID-19 response and state capacity. I have recently become very interested in the role that prices have on rebuilding. Government policies aside, the recovery of private-property stock is largely dependent on owners’ abilities to facilitate the rebuilding process. I am interested in further exploring the relationship between construction input prices (or whether these are controlled) and the rebuilding process.
+
+Traditional economic thought would assume natural disasters that decimate communities to cause a positive demand shock for construction inputs, thus raising prices. While the effect of the disaster on the supply of construction inputs is unclear and depends a lot on whether the supply is local and whether the supply-chain was also disrupted,I would nevertheless expect there to be an increase in the prices of construction inputs in the time following the disaster. This assumed increase in prices raises a number of questions regarding recovery:
+
+* Do prices for construction inputs actually rise post disaster?
+* Do construction input price increases leave people unable to afford to rebuild?
+* Do countries with price controls prohibiting significant increases have different housing rebuilding outcomes than those with free-market economies?
+
+Current literature on the topic of post-disaster housing reconstruction deals with a large variety of topics including the shortcomings of current rebuilding efforts in the developing world^[@steinberg2007housing, @nazara2007aceh] and who facilitates rebuilding^[@chang2010resourcing, @steinberg2007housing], there is not a lot of information on prices, even less so for construction input prices.
+
+@chang2010resourcing analyzed the housing stock recovery processes in three countries with different amounts of government control: China - state controlled economy with price protections; Indonesia - a donor-driven rebuilding process; and Australia - a market-driven approach.  The paper identifies weaknesses with all three approaches but points to Australia’s free market approach as the one with the most potential when accompanied by government policies focused on helping the poorest citizens. Importantly, @chang2010resourcing found that while China’s state-controlled approach with fixed prices helped facilitate a more equal rebuilding process in the short term, the price interference negatively impacted the local economy and the longer-term rebuilding process.
+
+Given the shortcomings of the common donor-driven response^[@steinberg2007housing], I am interested in exploring the role of prices in reconstruction. The question of price gouging is important for determining whether a nation's laws have created necessary, or at least helpful pre-conditions for effective recovery. While by nature of supply and demand building material prices should be expected to increase in the wake of a natural disaster, if the increase is too steep, people will not be able to afford to rebuild. I plan to look at price increases in the immediate aftermath of the disaster and compare the increases to previous fluctuations. Using the historical data, I hope to be able to see whether prices in the nation are simply typically volatile or whether the increase following the disaster was different. 
+
+To understand the role that price gouging (OR the free market) plays or could play in disaster recovery, I plan to observe whether price controls pertaining to disasters or price controls more generally exist within a country and if they do, whether price trends indicate that these controls are being adhered to. I then plan to examine whether there is a relationship between price volatility and recovery to see whether and how price variation impacts the recovery of the housing stock.
+
+This will all be possible if I am able to get my hands on pricing data for wood, cement, and steel, the three main construction inputs - I am not sure if this is realistic for many developing countries. If it is not possible, the Aid Data which has the total amount of money spent on each aid project may be helpful for inferring prices.
+
+# 5: What do I expect to argue?
+
+I haven't done my data analysis so I cannot definitively say what makes countries resilient to natural disasters but I do have a number of hypotheses that arose from my literature review.
+
+**H1:** Greater state capacity will allow governments to be more resilient.
+
+**H2:** Democratic regimes will enable affected communities to be more resilient.
+
+**H3:** States with stronger private property rights and protections will be more resilient.
+
+
+
+
+
+
+
+
+
+Word count: `r as.integer(sub("(\\d+).+$", "\\1", system(sprintf("wc -w %s", knitr::current_input()), intern = TRUE))) - 20`
+
+
+\newpage
+
+
+## Works Cited

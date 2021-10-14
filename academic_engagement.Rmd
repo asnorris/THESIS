@@ -1,0 +1,165 @@
+---
+title: "Thesis - Version 1"
+author: "Alexandra Norris"
+date: "9/20/2021"
+output:
+  pdf_document:
+    extra_dependencies: float
+link_citations: yes
+header-includes: \usepackage{setspace}\doublespacing\setlength{\parindent}{4em}\setlength{\parskip}{0em}
+bibliography: references.bib
+---
+
+
+```{r setup, include=FALSE}
+
+# The below code creates a bibliography and allows for the tables and figures to
+# be placed where I want them to be
+
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(fig.pos = "!H", out.extra = "")
+knitr::write_bib(c("base", "tinytex", "knitr", "kableExtra", "latexpdf", "readtext", "utils", "stargazer", "tidyverse", "sandwich", "lfe", "grid", "RColorBrewer", "rgdal", "rgeos", "maptools", "seg", "splancs", "gridExtra"), "bibliography.bib", width = 60)
+
+# load r packages
+
+library(tinytex)
+library(knitr)
+library(kableExtra)
+library(latexpdf)
+library(readtext)
+library(utils)
+library(bookdown)
+
+# need to load latex package "dcolumn" to allow latex tables to run and package
+# "float" to place tables and figures where I want them to go
+
+usepackage_latex("dcolumn")
+usepackage_latex("float")
+
+```
+
+
+How do nations respond to natural disasters? What makes for an effective response and enables them to be more resilient than other nations?
+
+The last twenty years have seen a significant rise in the number of climate-related disasters, putting much of the world’s population, in particular those living in poorer nations and communities at increased risk.  With Earth’s temperature predicted to rise further and with that the frequency of "once in a century" catastrophic weather events, the question of what enables nations to be resilient in the face of these exogenous disaster shocks is more important than ever.
+
+[INSERT ANNECDOTES ABOUT NATIONS EXPERIENCING DISASTERS BUT WITH VASTLY DIFFERNT OUTCOMES TO HIGHLIGHT WHY THIS MATTERS - THIS WILL COME WHEN I DO THE DATA ANALYSIS]
+
+This project explores the questions: "How do developing nations respond to natural disasters?" and "What makes for an effective response and enables them to be more resilient than other nations?".
+
+# Overview of Disaster Literature
+
+To understand the literature on the topic we must first understand context within which these questions arise. Disaster resilience and recovery are broad and nebulous terms that on their own can be confusing. To better understand what they mean I look to the work of @gallopin2006linkages. @gallopin2006linkages synthesizes theory from both the social and physical sciences and provides a framework with which to observe the reactions of socio-ecological events. The paper breaks the aftermath of a disaster into three components: vulnerability, resilience, and adaptive capacity. A nation's vulnerability to disasters depends on two key categories: exposure to the disaster and sensitivity to disasters. Given that exposure to disasters is no ones fault, sensitivity arises as the more interesting component of vulnerability. Sensitivity is how susceptible a place is to a disaster by virtue of it's innate traits. Much like how older people are more sensitive to COVID-19, some nations are more sensitive to natural disasters. The second component of  disaster response mentioned by @gallopin2006linkages is resilience, or how able a community is to cope with a disaster and respond positively, in other words, whether a community is able to rebuild effectively. Lastly, @gallopin2006linkages explains that adaptive capacity is a nation's ability to not only be resilient, but to improve its condition in the face of a future similar threat. 
+
+Interestingly, these three components of disaster response map neatly onto the temporal aspect of natural disaster responses. Vulnerability largely plays a role both during and in the immediate aftermath of the disaster, resilience determines the rebuilding process or medium-term aspect of disaster response, and adaptive capacity determines the long-term outcomes of the community if another similar disaster is to hit the community or nation.
+
+Much scholarly work exists on the topic of natural disasters, but the majority of the research focuses on vulnerability to natural disasters^[@kahn2005death, @lin_governing_2015, @tol2021state] in the short-term^[@skidmore2002natural focuses on the extremely long-term concept of creative destruction post-disaster but does not consider future adaptive capacity in its analysis, thus making an interesting but unhelpful point] or on individual and private sector responses to disasters^[@sawada2007impact, @drabo2015natural, @sawada2017natural, @rivera2014social], neglecting the roles that centralized states can play in disaster responses. While research on the longer-term aspects of disaster response do exist, the focus has been largely on post-mortem assessments of disasters striking developed nations^[@dacy1969economies, @peacock2000hurricane, @aldrich2015physical, @wright1979after, @rossi1993community]. 
+
+Post-disaster resilience and adaptive capacity in the developing world are under-theorized areas of political science and given that the impacts of climate change disproportionately affect developing nations^[https://www.un.org/press/en/2019/gaef3516.doc.htm], a critically important gap. While salient and topical, the lack of medium to long-term literature pertaining to the developing world makes sense given the lack of available data and the difficulty of gaining such data in the developing world. To measure the recovery process, one must be able to measure a multitude of variables including the rebuilding of homes, infrastructure, businesses, etc. This is difficult in the best of circumstances but situations with actors and limited record-keeping make measuring resilience even more so. Adaptive capacity requires researchers to be able to compare two similar events happening to the same nation after rebuilding once - this narrow scope of observation makes for a very small potential sample size.
+
+While there exists a gap in the literature pertaining to the resilience and adaptive capacity of developing nations in the face of natural disasters, literature on short-term vulnerability can be used gain a greater understanding of the forces driving more positive outcomes. @kahn2005death finds that democracies and nations with higher-quality institutions suffer fewer deaths when hit by natural disasters. Similarly, @lin_governing_2015 examines this relationship between the state and disaster vulnerability, finding evidence that democracy and strong state capacity reduce disaster-related mortality among citizens. @tol2021state builds on these works, finding again that greater state capacity leads to less vulnerability to disasters, but unlike @lin_governing_2015 and @kahn2005death which use log GDP per-capita as their indicator for state capacity, @tol2021state takes a more sophisticated look at the issue, using taxation and the size of the national bureaucracy as proxies for state capacity. According to @tol2021state, nations with greater tax revenue suffer both fewer disaster-related deaths and have fewer people affected by disasters when they do strike. While @tol2021state improves upon the measurement of state capacity, taxation as a measure is not completely convincing and raises questions about the nation's overall informational and administrative abilities.
+
+Literature on short-term vulnerability to disasters points to state capacity as the driving force behind positive outcomes - this seems to be the case, but a closer look reveals deeper layers within state capacity that may also play a role. @garnett2010enhancing provides an overview of different disaster responses in the developing world, finding through an assessment of numerous case studies that strategies focusing on local empowerment, organization and leadership, sustainable planning, and a free-market economy ultimately have more positive outcomes for affected communities. To understand the role state capacity and finer-grained components of state capacity have on disaster response it is important to understand the basis of state capacity.
+
+# State Capacity
+
+A seemingly simple and self-evident concept, state capacity is rather difficult to define. As evidenced by the creative ways in which the disaster literature attempts to operationalize it, there is no single agreed upon measure of the concept. @hendrix2010 addressees this and breaks down the concept of state capacity into three components: military capacity, bureaucratic/administrative capacity, and the quality of a nation’s political institutions. In regards to natural disaster resilience and adaptive capacity, all three of these sub-areas of state capacity can be important indicators of response and rebuilding capabilities.
+
+Military capacity contributes to state capacity in three distinct ways: as an example of a public good, as an indicator of taxation abilities, and through its repressive capacity. Militaries are public goods, and when not used against their own citizens, investments in them are investments in the interest of all citizens^[@besley2009origins]. The existence of a military can be one of the earliest indicators of the formation of a state, with @tilly1992coercion famously arguing that states arise because of a social contract between the governed and the governing - the government will protect the people from outside threats in return for payments in the form of taxes. Similarly, historical warfare is believed to serve as a predictor of modern-day state capacity, with states gaining capacity as they capacity forced to raise more taxes from their people to fight wars^[@north1989constitutions]. Importantly, this military view of state capcaity is not universally applicable. While true for Europe and Asia, in the African context, this increased state capacity due to wars often manifests itself in the creation of special-interest states: states with high fiscal capacity and levels of civil-conflict^[@dincecco2019africa]. These special-interest states with strong militaries are ripe grounds for warlords which use their capacity not to protect citizens from outside threats but to stifle perceived internal threats and extract resources from the people^[@robinson2002states]. While important, military capacity on its own does not fully explain state capacity and importantly, does not fully reveal the link between state capacity and disaster vulnerability.
+
+The strength of a nation's economy also plays a role in state capacity. There is a symbiotic relationship between strong states and strong economies^[@besley2010state]. Richer states are better able to provide services to their citizens which then ensure greater stability and revenue. The converse of this is that poorer countries have less state capacity which leads to worse service allocation and increased poverty. @lin_governing_2015, and @khan2005death both use log GDP per capita as their measures of state capacity, relying on this relationship to reveal the links between state capacity and disaster response. While this relationship is important, it should not be blindly relied upon to reveal state capacity given that there are numerous other factors at play. This positive relationship between a nation's economy is largely dependent upon the type of economy and resource extraction happening within the country. Countries in which the government is dependent on the citizens for resources have incentives to help grow the economy so that they can extract more^[@sanchez2020origins] - this is a win-win situation in which the economy grows and everyone, both the state and the people have more money. This inclusive growth of the economy can be contrasted with countries with vast natural resources stores.  In those nations, the economy isn’t tied to the welfare of the people and the state can gain resources and capacity without community benefit or buy-in^[@sanchez2020origins]. In order for a government to effectively extract resources from citizens through taxation there must be a reasonable state infrastructure set up. There is also evidence that in fragile states, citizens engage more with the state when there is taxation^[@weigel2020participation] and are more likely to engage in civil wars because the opportunity cost of foregoing being a law-abiding citizen is very low^[@hyden2012african].
+
+## Efficiency and Accountability
+
+While state capacity alone can be important, in order for a capable state to act, there must be both efficiency and accountability.
+
+In the context of natural disaster resilience and adaptive capacity, how quickly and effectively a community is able to be rebuilt is incredibly important. The longer it takes for homes and businesses to be rebuilt, the longer people are displaced and the economy stagnated. Like state capacity more broadly, bureaucratic efficiency relies upon the effective functioning of the government, but instead of ability, it focuses on how quickly governments can execute necessary functions^[@prendergast2003limits], in this case, how quickly a disaster response can be initiated.  When a disaster strikes a community, there is an initial large disruption with people being displaced, infrastructure damaged, and overall panic. How quickly a community can begin rebuilding and ultimately recover from a disaster depends on how quickly systematic efforts are initiated to begin and carry out the recovery process. A more efficient bureaucracy allows for less “red tape” that can make rebuilding difficult and lengthy. @garnett2010enhancing in its assessment of states that responded effectively to natural disasters found that the decentralization of disaster response agencies allowed for more efficient responses and faster action after a hurricane in Honduras. Issuing of a time-sensitive emergency mandate in Mexico after an earthquake resulted in faster rebuilding. Both of these events show that prioritizing swift action can facilitate faster rebuilding after a disaster. Additionally, the Sendai Framework for Disaster Risk Reduction, the UN's framework for effective disaster response, encourages the decentralization of post-disaster governance to encourage local empowerment/investment and a swifter response^[@UN]. 
+
+In order for there to be incentives for governments to act efficiently in the face of a disaster, citizens must be able to hold their governments accountable. In a democracy, elected officials are the agents of the people, meaning that the citizens, or principals entrust them with acting in their best interest^[@garen1994executive]. This principal-agent relationship may be the missing piece in the puzzle of state capacity and disaster response. @back2008democracy argue the existence of a j-shaped relationship between democracy and state capacity, claiming that while a robust democracy has the most state capacity, authoritarian states have more than emerging democracies due to the strength of their bureaucracies. Both authoritarian states and robust democracies are able to have strong bureaucracies, but they differ in where they derive their power. Authoritarian states have a top-down structure governed by control and fear while strong democracies gain their power from public accountability, cooperation, and transparency, the principal-agent relationship.  Both are effective at promoting state capacity because they have the ability to control people – one through community buy-in and the other through fear/the ability to punish. @lin_governing_2015 finds evidence of a negative relationship between democracy and disaster mortality rates, suggesting that democratic regimes are better able to respond to and prepare for natural disasters. Interestingly, @lin_governing_2015 finds that voters typically prefer relief spending over spending on prevention, suggesting that the mechanism behind the relationship between democracy and disaster resilience is not due to political pressure to prepare for disasters but instead can potentially be attributed to the government's relationship with and obligation to its citizens in the aftermath of the disaster.
+
+This democratic accountability to a nation's citizens is largely a product of the principal-agent relationship. Ideally, elected politicians act in the best interests of their citizens, making decisions about disaster recovery on their behalf. Information asymmetry and clientelism are seemingly the largest forces that can pervert accountability.  Much literature suggests that when voters have information about politician preferences and performance^[@platas2019closing, @carlson2015ethnic] they are better able to vote for politicians that align with their beliefs.  Similarly, when given information about corruption or about the role of government, citizens (and in some cases government officials) are able to hold officials accountable through voting them out of office^[@ferraz2008exposing, @gottlieb2016greater, @blattman2019eat], and in the case of politicians controlling bureaucrats, increased oversight of budgets can reduce corruption^[@raffler2016does].  Accountability also is impacted by clientelism, with vote buying in many cases perverting the principle-agent relationship so that politicians use citizens as agents to promote them to power^[@stokes2005perverse]. Regimes with robust democracies in which politicians are held accountable for their actions can be expected to facilitate more efficient recovery processes. @cooperman2021natural provides evidence of this accountability link, finding that in years when politicians are up for re-election they are more likely to declare a state of emergency to allow funds to be sent in to facilitate the recovery process.
+
+Unlike the work mentioned above in which citizens (principals) hold their politicians and governments (agents)  accountable through elections, in the case of disaster response, the time-line is much shorter, at least in the beginning, meaning that it is important to observe accountability not as an outcome in an experiment but as something embedded in the community. In addition to understanding how voters and people hold elected officials accountable, it is important to also understand how local people can feel empowered to support public works projects in their communities. @olken2010direct finds that local satisfaction with development projects was dramatically higher when the projects were chosen by way of direct votes from citizens rather than by choices made by a small group of people at a local meeting. @beath2017direcct and @beath2018can also support the importance of direct democracy, finding that aid projects in which all citizens were allowed to provide input for were more successful and representative of the needs of the people rather than just elites. Evidence from @garnett2010enhancing shows that in the aftermath of a 1998 flood in Bangladesh, the country’s free market allowed for grain to quickly be imported from abroad and was much faster than the government’s grain assistance. These findings suggest that increased direct community involvement in disaster responses will help to make countries more resilient.  Findings from @garnett2010enhancing support this argument. In their analysis of a number of catastrophic environmental events, they found that initiatives that directly involved citizens in rebuilding after a disaster were more successful and efficient. While not necessarily democratic accountability, the democratization of disaster response allows citizens to see a need and work together to meet it.
+
+
+# Inclusive Instititions
+
+A subset of both state capacity and democracy, another key component of resilience is how inclusive or democratic institutions are within a country. Inclusive institutions are economic and political systems which allow people to freely participate and benefit from the fruits of their labors^[@acemoglu2012nations], they include legal systems that protect property and intellectual property rights and prestigious jobs in both the public and private sectors that are merit-based. Nations with inclusive institutions are characterized by sufficient state capacity^[@fukuyama2012future, 2014] but also by opportunities for citizens to participate in both the economy and politics in the ways that they deem best fit^[@acemouglu2016paths]. With inclusive institutions, there are fewer barriers to entry in markets, allowing an entrepreneur to see a need, enter a market, and potentially profit from the idea. I hypothesize that countries with more inclusive institutions will be more resilient to natural disasters because of this limited barrier to entry. When citizens are able to freely respond to what they perceive as the needs of themselves and their communities, overall disaster responses will be swifter^[@garnett2010enhancing]. 
+While the actions of the government are important for how resilient a nation is to natural disasters, in order for things to be carried out and efficiently, there  must be cooperation both between the government and the people (trust, accountability, democracy) and between people (social cohesion). Aldrich and Meyer (2015) find that social capital and trust between the most vulnerable citizens and government officials is as important as the physical infrastructure rebuilding. When communities lack trust, they struggle to self organize and provide mutual aid to fellow citizens - this can result in less cooperation with relief and rebuilding projects^[Aldrich and Sawada 2015].
+ 
+Especially salient in the developing world, ethnicity plays an important role in national cooperation and in the sense of a common identity. The ability of a community to collectively act is largely determined by the number of people in the community, their ability to trust each other and work together, and in some circumstances, the heterogeneity of the community (part of the trust dynamic)^[@ostrom2007collective].  Ethnicity plays a large role in community trust but it is not completely clear what the shape of the relationship is.  There is evidence that more diversity actually improves the odds of collective action^[@posner2004political, @robinson2014national], but simultaneously, it is believed that increased diversity makes it more difficult for people to cooperate and decreases collective action^[@ejdemyr2018segregation, @habyarimana2007does].  I suspect that there may be a u-shaped relationship between diversity and collective action where homogeneous and extremely heterogeneous communities will both have higher levels of social-cohesion and are able to effectively act collectively while communities with one or a few dominant ethnic groups struggle more. 
+
+Ethnicity is just one factor that can influence social cohesion, religion and income also play a role in social cohesion. @kawachi1997social find that smaller differences in income between people result in people viewing their social environments as less hostile and more hospitable. Much literature exists on the role of a middle class in economic development^[@banerjee2007economic, @birdsall2000stuck, @easterly2001middle] and in strengthening democratic institutions^[@fukuyama2012future], suggesting that a robust middle class both increases state capacity and social cohesion.
+
+## State Control of the Economy
+
+While inclusive institutions more generally allow states, or in this case, citizens to respond to disasters, they also creates certain pre-conditions to the disaster which can impact how resilient a nation is to the exogenous disaster shock. One such of these pre-conditions is the openness of the economy, more specificically, the role that goods pricing plays in the recovery process. 
+
+One critical measure of resilience to natural disasters is the ability of people to rebuild their own homes. Government policies aside, the recovery of private-property stock is largely dependent on owners’ (or NGO's) abilities to facilitate the rebuilding process.
+
+Traditional economic thought would assume natural disasters that decimate communities to cause a positive demand shock for construction inputs, thus raising prices. While the effect of the disaster on the supply of construction inputs is unclear and depends a lot on whether the supply is local and whether the supply-chain was also disrupted, I would nevertheless expect there to be an increase in the prices of construction inputs in the time following the disaster. This assumed increase in prices raises a number of questions regarding recovery:
+
+* Do prices for construction inputs actually rise post disaster?
+* Do construction input price increases leave people unable to afford to rebuild?
+* Do countries with price controls prohibiting significant increases have different housing rebuilding outcomes than those with free-market economies?
+
+Current literature on the topic of post-disaster housing reconstruction deals with a large variety of topics including the shortcomings of current rebuilding efforts in the developing world^[@steinberg2007housing, @nazara2007aceh] and who facilitates rebuilding^[@chang2010resourcing, @steinberg2007housing], there is not a lot of information on prices, even less so for construction input prices. While not housing materials, an analysis of post-disaster supermarket prices in Chile and Japan found that while disasters negatively affected product availability in the months following the disaster, prices remained stable^[@cavallo2014prices]. Stock for all goods was affected but the trend was most present for non-perishable goods. @cavallo2014prices argue that the mechanisms behind these sticky prices differ between Chile and Japan with prices remaining stable in Chile as a result of retailers fearing "customer anger".
+
+While there likely were increases in demand for groceries, especially non-perishable goods in the time following the disaster, it is unlikely that the demand shock is as large as the one expected for building materials, suggesting that this post-disaster sticky-prices argument is not applicable to housing input prices.
+
+A closer look at housing stock shows a similarly confusing story. @chang2010resourcing analyzed the housing stock recovery processes in three countries with different amounts of government control: China - state controlled economy with price protections; Indonesia - a donor-driven rebuilding process; and Australia - a market-driven approach.  The paper identifies weaknesses with all three approaches but points to Australia’s free market approach as the one with the most potential when accompanied by government policies focussed on helping the poorest citizens. Importantly, @chang2010resourcing found that while China’s state-controlled approach with fixed prices helped facilitate a more equal rebuilding process in the short term, the price interference negatively impacted the local economy and the longer-term rebuilding process. These findings are incredibly important for understanding the role of the state in the economy on the rebuilding process, suggesting that a state-controlled economy can inhibit effective disaster response.
+
+Important for this project, much post-disaster rebuilding is donor-driven, meaning that NGOs and aid organizations facilitate resource allocation and rebuilding. @steinberg2007housing highlights the down-sides to this model, citing slow responses by multilateral organizations and disparate quality of housing in two Indonesian communities post-disaster. They also explore a community-driven approach to post-recovery development, finding that disasters not only destroy homes but also people and community structures, making a concentrated local response more difficult.
+
+Given the shortcomings of the common donor-driven response, I am interested in exploring the role of prices in reconstruction. The question of price gouging is important for determining whether a nation's laws have created necessary, or at least helpful pre-conditions for effective recovery. While by nature of supply and demand, building material prices should be expected to increase in the wake of a natural disaster, if the increase is too steep, people will not be able to afford to rebuild. I plan to look at price increases in the immediate aftermath of the disaster and compare the increases to previous fluctuations. Using the historical data, I hope to be able to see whether prices in the nation are simply typically volatile or whether the increase following the disaster was different. 
+
+To understand the role that price gouging (OR the free market) plays or could play in disaster recovery, I plan to observe whether price controls pertaining to disasters or price controls more generally exist within a country and if they do, whether price trends indicate that these controls are being adhered to. I then plan to examine whether there is a relationship between price volatility and recovery to see whether and how price variation impacts the recovery of the housing stock.
+
+# Conclusion
+
+How responsive and ultimately resilient a  nation is after a natural disaster largely depends on the nation’s state capacity, or a government’s ability to control and govern its own territory. In the context of natural disaster resilience, state capacity allows for governments to take preventative action, respond to short-term results of crises -- rescues, medical care, shelter for the displaced -- and to facilitate the rebuilding of communities^[@horney2018] . Without sufficient state capacity, even if political will exists, the government lacks the ability to follow through with effective action, leaving communities to their own devices to rebuild^[@skocpol1985]. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Word count: `r as.integer(sub("(\\d+).+$", "\\1", system(sprintf("wc -w %s", knitr::current_input()), intern = TRUE))) - 20`
+
+\newpage
+
+
+## Works Cited
