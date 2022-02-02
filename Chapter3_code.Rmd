@@ -1,0 +1,132 @@
+---
+title: "Ch3 Code"
+author: "Alexandra Norris"
+date: "1/17/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+# library(MatchIt)
+
+```
+
+```{r}
+# need to read in cleaned data from chapter 1
+
+ch1 <- read_csv("chapter1_cleaned.csv")
+
+# edit data to see whether a disaster struck the place before\ if the same type of disaster struck before
+
+ch3 <- ch1 %>%
+  # filter out data with no location because location is central to this part
+  filter(!is.na(location)) %>%
+  group_by(country, disaster_type, location) %>%
+  arrange(year) %>%
+  mutate(n_disaster = row_number()) %>%
+  # mutate(total_disaster = n()) %>%
+  # calculate a length of time since previous disaster variable so that I can filter out places that keep getting slammed
+  mutate(prev_disaster = lag(year)) %>%
+  mutate(time_btwn_disaster = year - prev_disaster) %>%
+  # hit before is a binary variable that determines whether the place has been hit previously - if there isn't a previous date then there is not a previous disaster in the data
+  mutate(hit_before = ifelse(is.na(prev_disaster),0,1)) %>%
+  # create a subsequent disaster variable for places hit at least 5 years after the initial disaster - I came to the choice of 5 after looking at the average deaths per time folling a disaster and found that 5 seems to be an inflection point
+  mutate(hit_5_years_ago = ifelse(time_btwn_disaster > 4,1,0)) %>%
+# there is a difference between having been hit previously in the last 5 years and never having been hit before - I will filter out the 99s
+  mutate(edited_hit_5 = ifelse(is.na(hit_5_years_ago),0, ifelse(hit_5_years_ago == 0,99,1)))
+
+ch3_filtered <- ch3 %>%
+  # remove the events that had another disaster recently before
+  filter(edited_hit_5 != 99)
+  
+  
+  # select(start_year, end_year, country, location, disaster_subgroup, n_disaster, total_disaster, more_than_one_dis, total_deaths, capacity, gdp_per_cap, disaster_type, disaster_mag, total_affected) %>%
+  # na.omit()
+
+
+
+dis_counts %>%
+  filter(!is.na(last_disaster)) %>%
+  select(year, disaster_type, country, location, last_disaster, time_btwn_disaster, more_than_one_dis, hit_5_15_years_ago)
+
+```
+
+```{r}
+
+# create a folder to put figures and tables
+
+dir.create("Ch3_Exhibits")
+
+# create a graph looking at average deaths per time after a disaster to justify when to put a "subsequent disaster" variable that controls for the fact that if immediately hit by another disaster that they may experience even more deaths and destruction
+
+ch3 %>%
+  group_by(time_btwn_disaster) %>%
+  mutate(average_deaths = weighted.mean(total_deaths, na.rm = TRUE, weights = total_affected)) %>%
+  ggplot(aes(x = time_btwn_disaster, y = average_deaths)) +
+  geom_col() +
+  labs(x = "Years since experiencing a similar disaster", y = "Average death count") +
+  theme_bw()
+
+ggsave("Ch3_Exhibits/avj_death.pdf")
+
+```
+
+```{r}
+# model with the large sample size that doesn't involve matching
+# use the negative binomial model for counts but also look at death rate - abandon the log because we've learned that it has little practical applicability
+
+require(MASS)
+# model relationshp for the different types of capacity
+
+# log_death_fit <- glm(log_death ~ capacity + disaster_type + disaster_mag + gdp_per_cap, data = chap1)
+
+adapt_rate <- glm(death_rate ~ capacity + n_disaster + edited_hit_5 + disaster_type + disaster_mag + gdp_per_cap, data = ch3_filtered)
+
+adapt_nbin <- glm.nb(total_deaths ~ capacity + edited_hit_5 + disaster_type + disaster_mag + gdp_per_cap, data = ch3_filtered)
+
+summary(adapt_nbin)
+
+```
+
+
+
+```{r}
+# The above deals with exact location and disaster matches - for a larger sample size - I use matchit which matches based off of covariates. This means that some things may be 
+
+dis <- ch3_filtered %>%
+  ungroup() %>%
+  dplyr::select(location, total_deaths, capacity, disaster_type, edited_hit_5) %>%
+  filter(!is.na(location)) %>%
+  filter(!is.na(disaster_type))
+
+require(MatchIt)
+
+match1 = matchit(edited_hit_5 ~ disaster_type + location,
+                       data = dis, method = "nearest", distance = "mahalanobis", replace = TRUE)
+
+matched1 = match.data(match1)
+
+summary(match1)
+
+# plot matched versus unmatched data - matched is much more balanced
+plot(summary(match1))
+
+# make this data a csv incase it somehow gets lost - it took a lot of processing power to match it all
+write_csv(matched1, "matched_data.csv")
+
+```
+
+```{r}
+
+# run model with matched data
+
+mod <- glm(total_deaths ~ capacity*edited_hit_5 + disaster_type, data = matched1, family = "poisson")
+
+summary(mod)
+```
+
+
+
+

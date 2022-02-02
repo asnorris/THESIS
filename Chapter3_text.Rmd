@@ -1,0 +1,83 @@
+---
+date: "1/18/2022"
+output:
+  pdf_document:
+    extra_dependencies: float
+# link_citations: yes
+header-includes: \usepackage{setspace}\doublespacing\setlength{\parindent}{4em}\setlength{\parskip}{0em}
+#bibliography: references.bib
+---
+
+```{r setup, include=FALSE}
+
+
+# The below code creates a bibliography and allows for the tables and figures to
+# be placed where I want them to be
+
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(fig.pos = "!H", out.extra = "")
+knitr::write_bib(c("base", "tinytex", "knitr", "kableExtra", "latexpdf", "readtext", "utils", "stargazer", "tidyverse", "sandwich", "lfe", "grid", "RColorBrewer", "rgdal", "rgeos", "maptools", "seg", "splancs", "gridExtra"), "bibliography.bib", width = 60)
+
+# load r packages
+
+library(tinytex)
+library(knitr)
+library(kableExtra)
+library(latexpdf)
+library(readtext)
+library(utils)
+library(bookdown)
+
+library(janitor)
+library(tidyverse)
+#
+# # need to load latex package "dcolumn" to allow latex tables to run and package
+# # "float" to place tables and figures where I want them to go
+#
+usepackage_latex("dcolumn")
+usepackage_latex("float")
+
+```
+
+# Adaptive Capacity Chapter
+
+This chapter focusses on the concept of adaptive capacity, a measure of whether a community did indeed "build back better". As explained in the theory chapter, adaptive capacity is defined as a community's ability to rebuild in a way that mitigates future risk to similar disasters[@gallopin2006linkages]. While seemingly simple, adaptive capacity relies on four key mechanisms: the ability to assess damages and identify weak points, the ability to finance disaster-safe rebuilding, buy-in and cooperation from stakeholders, and the ability of people to migrate to safer areas if they so wish. Adaptive capacity serves as a natural ending point of the empirical section of this thesis, after having interpreted the short-term relationship between disaster-related deaths and state capacity and length of rebuilding or "resilience" and state capacity, whether safer-practices or better outcomes come as a result of this is an important thing to measure. There is much literature on the idea of natural disaster-related "creative destruction" or the idea that the destruction caused by natural disasters can actually spur economic growth[@crespo2008natural]. While economic growth in the aftermath of natural disasters is important, this chapter explores adaptive capacity as it relates to the number of disaster-related deaths in a community. I measure adaptive capacity by comparing communities that have experienced a similar disaster in the past to those who have not and the role that state capacity plays in this relationship.
+
+In the following pages, I will explain the data sources that I use to test my hypotheses, describe in-depth the methods that I use for my analysis and the justifications for using them, and finally, present the results of my analyses.
+
+## Explanation of Data Sources and Measures
+
+To test my hypothesis that greater state capacity is associated with greater adaptive capacity, I rely on the two datasets used for the analyses in Chapter 1: the EM-DAT disaster dataset and the @hanson2013leviathan measure of state capacity and its components. The EM-DAT data includes information on the specific location of a natural disaster, the type of disaster, the severity of the disaster, the number of deaths that can be attributed to the disaster, and the total economic damages that result from the disaster. The EM-DAT data spans between 1960 and the present, and includes over 15,000 disasters. Important for this analysis, while the EM-DAT data includes a variable for the province-level (admin 1) and even village level (admin 2) of destruction in some cases, it also includes a broadly-defined "location" variable which chooses the appropriate "name of a city, village, department, province, state, or district" @emdat that is appropriate for the disaster. This broadly defined location variable will be central for this analysis. I chose the location variable to denote the place of the disaster -- over the province, or the country --- because the variable is flexible. Different disasters affect different size areas and because this chapter focuses on looking at the relationship between national-level state capacity indicators and sub national disaster outcomes, it is not important whether a disaster struck a particular province, but it is important to know whether a disaster struck the same area twice, regardless of that area's size. Using the broadly defined location variable allows for the location to fit the disaster and for similar disasters impacting the same area to be compared. Because the EM-DAT data spans such a long time-period, I am able to find a number of locations that have experienced more than one disaster in this time period. Important to note, I do recognize that 1960 is not year 0 and that communities may have experienced disasters that they have learned and adapted from pre 1960, but given the large size of this dataset and the fact that communities can continue to learn and adapt from subsequent disasters I believe that this is a valid measurement. 
+
+Because "adaptive capacity" is not a variable included in the dataset, I needed to conceptualize how to measure it. Adaptive capacity relies on a number of underlying mechanisms, but because I am primarily interested in the role of state capacity in influencing disaster-related outcomes, I choose to focus on comparing outcomes of, locations that have previously experienced a disaster to those which have not. In this comparison, I focus on two main outcome variables: the total number of deaths attributed to a disaster, and deadliness, which as defined in Chapter 1 is the ratio of deaths to people affected, indicating how many of those affected died as a result of a disaster.^[While Chapter 1 focuses on three main outcome variables: log deaths, deadliness, and gross deaths, this chapter only focuses on the latter two. The log death outcome variable was important in Chapter 1 because it allowed the the short-term work of the thesis to be compared to the previous literature which measured log deaths as an outcome variable. Because the relationship between log deaths and state capacity and gross deaths and state capacity mirror eachother, I choose to focus on the gross death outcome which allows me to see how deaths and state capacity relate while also quantifying that relationship in terms of a real concrete variable that is meaningful.] The total deaths variable includes the number of people who lost their lives as a result of the disaster an the number of missing people (who are presumed dead). The total affected variable includes the number of people who require assistance as a result of the disaster. While the EM-DAT dataset does include an estimate of the economic damages caused by a disaster, I choose not to use this as a means to measure adaptive capacity for two main reasons: 1) Property values after reconstruction could be greater than previously, meaning that a disaster with a similar or even lesser level of destruction could be classified as worse; and 2) A community that never chose to rebuild may experience very few economic losses if hit by a second disaster but that doesn't mean that the consequences were not dire for the people living there. The number of people who dies from and are affected by disasters are much more objective measures.
+<!-- The value is based off of knowledge about the population of a given area and the number of homes destroyed. Finally, the total estimated damages variable includes the value of the economic losses and property damage that can be attributed both directly and indirectly to the disaster. The damages are measured in US dollars in the value of the year when the disaster occurred. To allow for cross-temporal comparisons and to account for inflation, I create a present-day (2021) value of economic losses variable using CPI data from the Bureau of Labor and Statistics. -->
+
+Again, like in the first empirical chapter, I measure state capacity and its three components ---  administrative capacity, coercive capacity, and extractive capacity --- using the @hanson2013leviathan measures of state capacity. While they have been explained previously, for a refresher: administrative capacity relates to the strength of a country's bureaucracy, coercive capacity is a nation's ability to control its population, and extractive capacity indicates a country's ability to extract revenue from its people and territory. Like in Chapter 1, I use the "Bureaucratic Quality" indicator to measure administrative capacity, the "Relative Political Reach" indicator to measure coercive capacity, and the "Absolute Political Extraction" indicator to measure extractive capacity.
+
+# Methods
+
+To explore the relationship between state capacity and adaptive capacity I first need to identify whether a disaster has happened previously in any location. To identify whether a particular location experienced a disaster previously I took the combined disaster state capacity dataset used in Chapter 1 and removed all data points that did not include a location variable. I then grouped the data by location, country, and type of disaster so that I could identify whether a given type of disaster had previously occurred in a given location. I Then created a "last disaster" variable which if such a thing existed, was the year of the disaster that preceded the disaster of focus. With this "last disaster" variable I am able to then create two new variables, one a binary variable to denote whether a given location has previously experienced a disaster, and another which shows if there was a previous disaster, how long ago it happened. This length of time since last disaster is a crucial variable in this analysis.
+
+If a community is hit by multiple disasters in rapid succession, there likely will not have been enough time between the disasters for the communities to rebuild. This phenomena could result in a greater number of deaths when experiencing subsequent disasters because people did not have adequate shelter. Most importantly, for this chapter I wish to measure adaptive capacity as it relates to the ability of communities to "build back better". If I cannot ensure that the communities I am observing aren't first re-built, there will be no way to accurately measure this variable. To account for locations that experienced multiple disasters in rapid succession, I narrow my definition of what it means to have previously experienced a disaster to only places that experienced another disaster five or more years ago. I chose five years because when looking at the average number of deaths per year experiencing a previous disaster, I find that at around five years after the disaster the average number of deaths begins to fall, suggesting that communities have been rebuilt[NOTE: I am currently finishing cleaning the chapter 2 rebuilding data. When I have that I will likely change 5-years to the average rebuilding time]. Because I am interested in comparing communities that did not experience a previous disaster to those which experienced a disaster aat least five years ago, I filter out the disasters that had previous disasters that were within the preceding five years.
+
+With this new variable denoting whether or not a community experienced a disaster, I can analyze the relationship between state capacity and adaptive capacity. The following sections explain the two techniques I use to observe this relationship: 1) standard regressions like used in Chapter 1, and 2) a matching technique to observe the same places but with some never before experiencing a disaster. For both of these techniques, I focus on two of the main outcome variables observed in Chapter 1: deadliness, and gross deaths.
+
+
+## The Basic Test
+
+To measure adaptive capacity, I will use the same models used in Chapter 1 but with the additional variable of whether or not a location had previously experienced a similar disaster. The following estimation equations indicate the models used to estimate the relationship between having experienced a previous disaster, state capacity and the two key outcome variables.
+
+$$Total \ Deaths = \beta_0 + \beta_1*Capacity + \beta_2*Previous \ Disaster + \beta_3*Capacity*Previous \ Disaster + \beta_4*Disaster\ Type + \beta_5*Magnitude + \beta_6*GDP \ percapita$$
+
+$$Deadliness = \frac{Total\  Deaths}{Total \ Affected} = \beta_0 + \beta_1*Capacity + \beta_2*Previous \ Disaster + \beta_3*Capacity*Previous \ Disaster + \beta_4*Disaster\ Type + \beta_5*Magnitude + \beta_6*GDP \ percapita$$
+Because the two outcome variables are different --- total deaths is a count variable while deadliness is a ratio --- I need to use two different models to measure the relationships. As I did in Chapter 1, I use a linear model to measure deadliness and a negative binomial model to measure total deaths. In addition to the broad state capacity variable, I am also interested in observing the three sub-categories of state capacity and how they interact with the previous disaster variable. Using the same model above, I substitute in the three different state capacity varaiable for state capacity, interacting each of them with whether or not a location previously experienced a disaster.
+
+## Matching as a way to isolate effects
+
+In addition to the regression test noted above done with the basic EM-DAT data, I also conduct similar tests but using statistical matching to create a smaller dataset in which covariates are more balanced. Because the EM-DAT data is observational and whether a 
+
+
+<!-- ## Adaptive Capacity - Chapter 3 -->
+
+<!-- To measure adaptive capacity, I solely rely on the EM-DAT dataset. The EM-DAT data includes information on the type of disaster, the severity of the disaster, how many deaths were caused by the disaster, and the total economic damages. Because EM-DAT spans such a long time-period, I am able to filter for communities that experience the same type of disaster with the same severity multiple times. I then am able to use the deaths and economic damages^[I am less convinced that economic damages is a good way to measure this because with greater economic growth also brings greater potential losses due to disasters. In other words, if there is no infrastructure to be destroyed, the economic losses from a disaster would be zero.] data to compare how the same community fared in the aftermath of the original disaster. A nation that demonstrates significant adaptive capacity would see fewer deaths and losses the next time they experience a similar disaster, showing that they learned from the initial disaster and rebuilt in a way that greater protected them from similar disasters. -->
+

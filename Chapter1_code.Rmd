@@ -1,0 +1,338 @@
+---
+title: "Chapter 1 Analysis"
+author: "Alexandra Norris"
+date: "\today"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+
+library(tidyverse)
+library(readxl)
+library(wbstats)
+library(stargazer) # for tables
+# for robust SE
+```
+
+```{r warning=FALSE}
+
+# load in the EM-DAT data from 1960 to the present for NATURAL disasters because that is how far back the state capacity goes
+# dataset accessed on November 29, 2021
+
+emdat <- read_csv("Data/emdat_1960-present.csv") %>%
+  janitor::clean_names()
+
+```
+
+```{r}
+
+# read in simple state capacity data - accessed at: https://github.com/asnorris/WB_Data_Capacity/blob/main/Cleaned%20WB%20data%20on%20statistical%20capacity.xlsx
+
+# sc_simp <- read_csv("Data/State_Capacity/Cleaned WB data on statistical capacity.csv") %>%
+#   rename(year = time) %>%
+#   rename(country = country_name) %>%
+#   select(country, year, capacity_score) %>%
+#   rename(simple_cap_score = capacity_score)
+  
+```
+
+```{r}
+
+# read in complex state capacity data from Hanson & Sigman (2020): https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi%3A10.7910%2FDVN%2FIFZXQX&version=&q=&fileTypeGroupFacet=%22Tabular+Data%22&fileAccess=&fileTag=&fileSortField=&fileSortOrder=
+
+# data came in an RDS format and loaded in as "table"
+
+# there are a lot of different measures that may be useful - the main one is "Capacity"
+
+load("Data/State_Capacity/HansonSigman_source.RData")
+
+sc_complex <- table %>%
+  janitor::clean_names()
+
+```
+
+```{r}
+
+# merge together state capacity data
+# sc <- full_join(sc_complex, sc_simp)
+
+# merge state capacity with EM-DAT data
+chap1 <- left_join(emdat, sc_complex)
+
+# to be able to make comparisons amongst different disasters I must standardize the magnitude variables
+
+chap1 <- chap1 %>%
+  group_by(disaster_type) %>%
+  mutate(disaster_mag = (dis_mag_value - mean(dis_mag_value, na.rm=TRUE))/sd(dis_mag_value, na.rm = TRUE)) %>%
+  ungroup()
+
+# load in world bank GDP per capita data - in current USD
+gdp_per_capita <- wb_data("NY.GDP.PCAP.CD") %>%
+  mutate(iso3 = iso3c) %>%
+  rename(year = date) %>%
+  mutate(gdp_per_cap = NY.GDP.PCAP.CD) %>%
+  select(iso3, year, gdp_per_cap)
+
+# find most prevalent disaster types
+# chap1 %>%
+#   group_by(disaster_type) %>%
+#   mutate(sum_death = sum(total_deaths, na.rm = TRUE)) %>%
+#   select(disaster_type,sum_death) %>%
+#   distinct()
+#   select(disaster_type) %>%
+#   distinct()
+
+chap1 <- left_join(chap1, gdp_per_capita) %>%
+  # create a log gdp per capita variable
+  mutate(log_gdp_percap = log(gdp_per_cap)) %>%
+  # filter out the four disaster types that have fewer than 1000 deaths in 60 years: insect infestation
+  # impact, animal accident, and glacial lake outburst
+  filter(!disaster_type %in% c("Insect infestation", "Impact", "Animal accident", "Glacial lake outburst")) %>%
+  mutate(log_death = log(total_deaths)) %>%
+  mutate(death_rate = total_deaths/total_affected)
+
+# read in Arbertman and Rabinovitz: https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/NRR7MB
+cap <- read_xlsx("Data/fisunoglu2020.xlsx")
+
+chap1 <- left_join(chap1, cap, by = c("year", "country"))
+
+write.csv(chap1, "chapter1_cleaned.csv")
+  
+```
+
+
+
+```{r}
+# replicate the findings of lin and tol
+
+lin_fit <- lm(log_death ~ log_gdp_percap, data = chap1)
+  
+tol_fit <- lm(log_death ~ taxrev_gdp, data = chap1)
+
+# create table and upload it to the folder
+cat(stargazer::stargazer(lin_fit, tol_fit,
+                     dep.var.labels=c("ln(Total Deaths)"),
+                     covariate.labels=c("ln(GDP per capita)","Tax Revenue"),
+                     header = FALSE), file = "Chapter1/C1_Exhibits/lin_tol.tex")
+
+```
+
+```{r}
+
+# look at the dispersion in the total deaths data to see whether it should be poisson or negative binomial
+# mean and variance
+mean(chap1$total_deaths, na.rm = T)
+(chap1$total_deaths, na.rm = T)
+
+chap1 %>%
+  ggplot(aes(x = log_death)) +
+  geom_histogram() +
+  theme_classic() + 
+  labs(x = "ln(Total Death)", y = "Count")
+ggsave("Chapter1/C1_Exhibits/dispersion_hist.pdf")
+  
+```
+
+
+```{r}
+
+# run three models: log deaths, death ratio, total deaths
+
+log_death_fit <- glm(log_death ~ capacity + disaster_type + disaster_mag + gdp_per_cap, data = chap1)
+
+death_ratio_fit <- glm(death_rate ~ capacity + disaster_type + disaster_mag + gdp_per_cap, data = chap1)
+
+# mass package needed for negative binomial model
+require(MASS)
+
+# run negative binomial model
+nbin_cap <- glm.nb(total_deaths ~ capacity + disaster_type + disaster_mag + gdp_per_cap, data = chap1)
+
+# converge the three models into a single table
+cat(stargazer::stargazer(log_death_fit, death_ratio_fit, nbin_cap,
+                     dep.var.labels=c("ln(Total Deaths)"),
+                     omit=c("disaster_typeEarthquake", "disaster_typeEpidemic", "disaster_typeExtreme temperature", "disaster_typeFlood", "disaster_typeLandslide", "disaster_typeStorm", "disaster_typeWildfire"),
+                     covariate.labels=c("State Capacity","Disaster Magnitude", "GDP per capita"), type = "text")
+                     header = FALSE), file = "Chapter1/C1_Exhibits/capacity_deaths.tex")
+
+
+# create a table that uses robust standard errors for the appendix - ROBUSTNESS CHECK
+
+
+```
+
+```{r}
+
+# model relationshp for the different types of capaciyu
+
+cap_types_log <- glm(log_death ~ v2clrspct + rpr + ape1 + disaster_type + disaster_mag + gdp_per_cap, data = chap1)
+
+cap_types_ratio <- glm(death_rate ~ v2clrspct + rpr + ape1 + disaster_type + disaster_mag + gdp_per_cap, data = chap1)
+
+cap_types_nbin <- glm.nb(total_deaths ~ v2clrspct + rpr + ape1 + disaster_type + disaster_mag + gdp_per_cap, data = chap1)
+
+
+# make models in one table
+cat(stargazer::stargazer(cap_types_log, cap_types_ratio, cap_types_nbin,
+                     # dep.var.labels=c("ln(Total Deaths)"),
+                     omit=c("disaster_typeEarthquake", "disaster_typeEpidemic", "disaster_typeExtreme temperature", "disaster_typeFlood", "disaster_typeLandslide", "disaster_typeStorm", "disaster_typeWildfire"),
+                     covariate.labels=c("Administrative Capacity","Coercive Capacity", "Extractive Capacity", "Disaster Magnitude", "GDP per capita"),
+                     header = FALSE), file = "Chapter1/C1_Exhibits/capacity_dif_types.tex")
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+
+# play around with chapter 1 data so that I have a log deaths and a death percentage rate
+
+f <- glm(log_death ~ capacity + disaster_type + disaster_mag, data = x)
+summary(f)
+
+d <- lm(log_death ~ death_rate, data = x)
+
+summary(d)
+```
+
+
+
+
+```{r, results='asis'}
+# require(MASS)
+require(lmtest)
+require(sandwich)
+# library(MASS) #for the negative binomial models
+# library(lmtest) # fir robust SE
+# library(sandwich) 
+
+test2 <- chap1 %>%
+  mutate(big_tax = taxrev_gdp * 100)
+# use world bank gdp per cap data - in 2021 dollars
+lin_pos <- glm(total_deaths ~ log_gdp_percap, data = chap1, family = "poisson")
+lin_nbin <- MASS::glm.nb(total_deaths ~ log_gdp_percap, data = chap1, init.theta = 10)
+
+# Hansen data has taxrev gdp 
+tol_pos <- glm(total_deaths ~ taxrev_gdp, data = chap1, family = "poisson")
+tol_nbin <- glm.nb(total_deaths ~ taxrev_gdp, data = chap1)
+
+# robust standard errors for all four models
+lin_pos_SE <- coeftest(lin_pos, vcov. = vcovHC(lin_pos, type = "HC0"))
+lin_nbin_SE <- coeftest(lin_nbin, vcov. = vcovHC(lin_nbin, type = "HC0"))
+tol_pos_SE <- coeftest(tol_pos, vcov. = vcovHC(tol_pos, type = "HC0"))
+tol_nbin_SE <- coeftest(tol_nbin, vcov. = vcovHC(tol_nbin, type = "HC0"))
+
+# make table which includes robust SE
+stargazer(lin_pos, lin_pos_SE, lin_nbin, lin_nbin_SE,
+          title = "Lin (2015) Replication"
+          # align = TRUE, column.labels  = c("Lin(2015)","Tol 2021"),
+          # column.separate = c(2, 2),
+          )
+
+stargazer(tol_pos, tol_pos_SE, tol_nbin, tol_nbin_SE,
+          title = "Tol (2021) Replication"
+          # align = TRUE, column.labels  = c("Lin(2015)","Tol 2021"),
+          # column.separate = c(2, 2),
+          )
+```
+
+```{r, results='asis'}
+# do my own analysis with different versions of the state capacity variable
+
+# mod_iv_only <- glm(total_deaths ~ capacity, data = chap1, family = "poisson")
+
+# mod_gdp_inc <- glm(total_deaths ~ capacity + gdp_per_cap, data = chap1, family = "poisson")
+
+mod_cap_type <- glm(total_deaths ~ capacity + disaster_type, data = chap1, family = "poisson")
+# 
+# stargazer::stargazer(mod_iv_only, mod_gdp_inc, mod_cap_type, type = "text")
+```
+
+```{r,results='asis'}
+
+# Model just looking at disaster types and magnitude 
+mag_pos <- glm(total_deaths ~ capacity + gdp_per_cap + disaster_type + disaster_mag + total_affected, data = chap1, family = "poisson")
+mag_nbin <- glm.nb(total_deaths ~ capacity + gdp_per_cap + disaster_type + disaster_mag + total_affected, data = chap1)
+ 
+# add the number of affected people as another control variable for the magnitude of the disaster
+
+# affected_pos <- glm(total_deaths ~ capacity + gdp_per_cap + disaster_type + total_affected, data = chap1, family = "poisson")
+# affected_nbin <- glm.nb(total_deaths ~ capacity + gdp_per_cap + disaster_type + total_affected, data = chap1)
+# 
+# 
+# # look at the four different models
+# stargazer::stargazer(mod_mag_pos, mod_mag_nbin,
+#                      mod_inc_affected_pos, mod_inc_affected_nbin, type = "text")
+
+# robust standard errors for all four models
+mag_pos_SE <- coeftest(mag_pos, vcov. = vcovHC(mag_pos, type = "HC0"))
+mag_nbin_SE <- coeftest(mag_nbin, vcov. = vcovHC(mag_nbin, type = "HC0"))
+# affected_pos_SE <- coeftest(affected_pos, vcov. = vcovHC(affected_pos, type = "HC0"))
+# affected_nbin_SE <- coeftest(affected_nbin, vcov. = vcovHC(affected_nbin, type = "HC0"))
+
+# print robust SE data
+stargazer(mag_pos, mag_pos_SE, mag_nbin, mag_nbin_SE
+          # align = TRUE, column.labels  = c("Lin(2015)","Tol 2021"),
+          # column.separate = c(2, 2),
+          )
+
+```
+
+
+```{r, results='asis'}
+require(MASS)
+
+# # # coercive capacity
+# coerce_pos <- glm(total_deaths ~ rpr, data = chap1, family = "poisson")
+# coerce_nbin <- glm.nb(total_deaths ~ rpr, data = chap1)
+# # 
+# # # extractive capacity
+# extract <- glm.nb(total_deaths ~ ape1, data = chap1)
+# # 
+# # # administrative capacity
+# admin <- glm.nb(total_deaths ~ adm_effic, data = chap1)
+# # 
+# # # democracy
+# dem <- glm.nb(total_deaths ~ anocracy, data = chap1)
+# 
+# stargazer::stargazer(coerce, extract, admin, type = "text", column.labels = c("Coercive Capacity", "Extractive Capacity", "Administrative Capacity"))
+
+
+cap_pos <- glm(total_deaths ~ adm_effic + rpr + ape1, data = chap1, family = "poisson")
+
+cap_nbin <- glm.nb(total_deaths ~ adm_effic + rpr + ape1, data = chap1, link = "identity")
+
+# calculate robust SE
+cap_pos_SE <- coeftest(cap_pos, vcov. = vcovHC(cap_pos, type = "HC0"))
+cap_nbin_SE <- coeftest(cap_nbin, vcov. = vcovHC(cap_nbin, type = "HC0"))
+
+stargazer::stargazer(cap_pos, cap_pos_SE, cap_nbin, cap_nbin_SE,
+                     covariate.labels = c("Administrative Capacity", "Coercive Capacity", "Extractive Capacity"), type = "text")
+
+```
+
+
+
+
+
