@@ -20,7 +20,7 @@ ch1 <- read_csv("chapter1_cleaned.csv")
 
 # edit data to see whether a disaster struck the place before\ if the same type of disaster struck before
 
-ch3 <- ch1 %>%
+location <- ch1 %>%
   # filter out data with no location because location is central to this part
   filter(!is.na(location)) %>%
   group_by(country, disaster_type, location) %>%
@@ -28,14 +28,31 @@ ch3 <- ch1 %>%
   mutate(n_disaster = row_number()) %>%
   # mutate(total_disaster = n()) %>%
   # calculate a length of time since previous disaster variable so that I can filter out places that keep getting slammed
-  mutate(prev_disaster = lag(year)) %>%
-  mutate(time_btwn_disaster = year - prev_disaster) %>%
+  mutate(prev_disaster_year = lag(year)) %>%
+  mutate(time_btwn_disaster = year - prev_disaster_year) %>%
   # hit before is a binary variable that determines whether the place has been hit previously - if there isn't a previous date then there is not a previous disaster in the data
-  mutate(hit_before = ifelse(is.na(prev_disaster),0,1)) %>%
+  mutate(hit_before = ifelse(is.na(prev_disaster_year),0,1)) %>%
   # create a subsequent disaster variable for places hit at least 5 years after the initial disaster - I came to the choice of 5 after looking at the average deaths per time folling a disaster and found that 5 seems to be an inflection point
   mutate(hit_5_years_ago = ifelse(time_btwn_disaster > 4,1,0)) %>%
-# there is a difference between having been hit previously in the last 5 years and never having been hit before - I will filter out the 99s
-  mutate(edited_hit_5 = ifelse(is.na(hit_5_years_ago),0, ifelse(hit_5_years_ago == 0,99,1)))
+  # there is a difference between having been hit previously in the last 5 years and never having been hit before - I will filter out the 99s
+  mutate(edited_hit_5 = ifelse(is.na(hit_5_years_ago),0, ifelse(hit_5_years_ago == 0,99,1))) %>%
+  # create a lagged death variable for the log deaths
+  mutate(prev_disaster_log = lag(log_death)) %>%
+  # create a lagged death variable for the total deaths
+  mutate(prev_disaster_death = lag(total_deaths)) %>%
+   # create a lagged death variable for the death rate/deadliness variable
+  mutate(prev_disaster_deadliness = lag(death_rate)) %>%
+  # create death rate and total death differences
+  mutate(death_difference = (total_deaths - prev_disaster_death)/prev_disaster_death) %>%
+  mutate(deadliness_difference = death_rate - prev_disaster_deadliness) %>%
+  mutate(log_difference = log_death - prev_disaster_log) %>%
+  # create a past disaster capacitvariable.names
+  mutate(last_dis_cap = lag(capacity)) %>%
+  # create a time squared variable because relationship between outcome and time may be curvilinear
+  mutate(square_time = time_btwn_disaster^2) %>%
+  # create a lag gdp variable
+  mutate(lag_gdp = lag(gdp_per_cap))
+  
 
 ch3_filtered <- ch3 %>%
   # remove the events that had another disaster recently before
@@ -77,18 +94,92 @@ ggsave("Ch3_Exhibits/avj_death.pdf")
 # model with the large sample size that doesn't involve matching
 # use the negative binomial model for counts but also look at death rate - abandon the log because we've learned that it has little practical applicability
 
-require(MASS)
+location %>%
+  select(log_difference, prev_year_capacity, year) %>%
+  na.omit()
+
+
 # model relationshp for the different types of capacity
 
-# log_death_fit <- glm(log_death ~ capacity + disaster_type + disaster_mag + gdp_per_cap, data = chap1)
+adapt_log <- glm(log_difference ~ last_dis_cap + square_time + n_disaster + lag_gdp, data = location)
+# add magnitude as robustness check
 
-adapt_rate <- glm(death_rate ~ capacity + n_disaster + edited_hit_5 + disaster_type + disaster_mag + gdp_per_cap, data = ch3_filtered)
+adapt_rate <- glm(deadliness_difference ~ last_dis_cap + square_time + n_disaster + lag_gdp, data = location)
 
-adapt_nbin <- glm.nb(total_deaths ~ capacity + edited_hit_5 + disaster_type + disaster_mag + gdp_per_cap, data = ch3_filtered)
+adapt_nbin <- glm(death_difference ~ last_dis_cap + square_time + n_disaster + lag_gdp, data = location)
 
-summary(adapt_nbin)
+# create table and upload it to the folder
+cat(stargazer::stargazer(adapt_log, adapt_rate, adapt_nbin,
+                     dep.var.labels=c("Log Deaths", "Deadliness", "Total Deaths"), 
+                     omit=c("disaster_typeEarthquake", "disaster_typeEpidemic", "disaster_typeExtreme temperature", "disaster_typeFlood", "disaster_typeLandslide", "disaster_typeStorm", "disaster_typeWildfire"),
+                     covariate.labels=c("State Capacity","Time Since previous disaster", "Nth Disaster", "GDP percapita"), 
+                     header = FALSE), file = "Ch3_Exhibits/dif_cap.tex")
 
 ```
+
+```{r}
+
+
+adapt_log <- glm(log_difference ~ v2clrspct + milpercap + ape1 + square_time + n_disaster + lag_gdp, data = location)
+# add magnitude as robustness check
+
+adapt_rate <- glm(deadliness_difference ~ v2clrspct + milpercap + ape1 + square_time + n_disaster + lag_gdp, data = location)
+
+adapt_nbin <- glm(death_difference ~ v2clrspct + milpercap + ape1 + square_time + n_disaster + lag_gdp, data = location)
+
+
+# create table and upload it to the folder
+cat(stargazer::stargazer(adapt_log, adapt_rate,adapt_nbin,
+                     dep.var.labels=c("Log Deaths","Deadliness", "Total Deaths"),
+                     omit=c("disaster_typeEarthquake", "disaster_typeEpidemic", "disaster_typeExtreme temperature", "disaster_typeFlood", "disaster_typeLandslide", "disaster_typeStorm", "disaster_typeWildfire"),
+                     covariate.labels=c("Administrative Capacity", "Coercive Capacity", "Extractive Capacity", "Time Since Prior Disaster", "Nth Disaster", "GDP per capita"),
+                     header = FALSE), file = "Ch3_Exhibits/dif_cap_comp.tex")
+```
+
+
+
+```{r}
+
+
+# model relationshp for the different types of capacity
+
+country_log <- glm(log_difference ~ last_dis_cap + square_time + n_disaster, data = country)
+
+summary(country_nbin)
+
+stargazer::stargazer(log_death_fit, type = "text")
+
+country_rate <- glm(deadliness_difference ~ last_dis_cap + square_time + n_disaster, data = country)
+
+country_nbin <- glm(death_difference ~ last_dis_cap + square_time + n_disaster, data = country)
+
+
+
+```
+
+
+
+
+
+
+```{r}
+
+# do the above but with the different sub-types of state capacity
+
+
+adapt_rate_multi <- glm(death_rate ~ v2clrspct*edited_hit_5 + rpr*edited_hit_5 + ape1*edited_hit_5 + disaster_type + disaster_mag + gdp_per_cap, data = ch3_filtered)
+
+adapt_nbin_multi <- glm.nb(total_deaths ~ v2clrspct*edited_hit_5 + rpr*edited_hit_5 + ape1*edited_hit_5 + disaster_type + disaster_mag + gdp_per_cap, data = ch3_filtered)
+
+# create table and upload it to the folder
+cat(stargazer::stargazer(adapt_rate_multi, adapt_nbin_multi,
+                     dep.var.labels=c("Deadliness", "Total Deaths"),
+                     omit=c("disaster_typeEarthquake", "disaster_typeEpidemic", "disaster_typeExtreme temperature", "disaster_typeFlood", "disaster_typeLandslide", "disaster_typeStorm", "disaster_typeWildfire"),
+                     covariate.labels=c("Administrative Capacity","Subsequent Disaster", "Coercive Capacity", "Extractive Capacity", "Disaster Magnitude", "GDP per capita", "Admin. Cap.*Subsequent Disaster", "Coercice Cap.*Subsequent Disaster", "Extract. Cap.*Subsequent Disaster"),
+                     header = FALSE), file = "Ch3_Exhibits/components_adapt.tex")
+
+```
+
 
 
 
@@ -97,7 +188,7 @@ summary(adapt_nbin)
 
 dis <- ch3_filtered %>%
   ungroup() %>%
-  dplyr::select(location, total_deaths, capacity, disaster_type, edited_hit_5) %>%
+  dplyr::select(country, location, disaster_type, edited_hit_5) %>%
   filter(!is.na(location)) %>%
   filter(!is.na(disaster_type))
 
@@ -120,11 +211,26 @@ write_csv(matched1, "matched_data.csv")
 
 ```{r}
 
-# run model with matched data
+cov <- ch3_filtered %>%
+  select(location, disaster_type, total_deaths, death_rate, disaster_mag, gdp_per_cap)
+
+
+
+# need to match back the other variables onto the data so they can be included as controls
+
+match_cov <- left_join(matched1, cov)
+
+require(MASS)
+
+# run models with matched data
+
+rate_match <- glm(death_rate ~ capacity*edited_hit_5 + disaster_type + disaster_mag + gdp_per_cap, data = match_cov)
+
+nbin_match <- glm.nb(total_deaths ~ capacity*edited_hit_5 + disaster_type + disaster_mag + gdp_per_cap, data = match_cov)
 
 mod <- glm(total_deaths ~ capacity*edited_hit_5 + disaster_type, data = matched1, family = "poisson")
 
-summary(mod)
+summary(rate_match)
 ```
 
 

@@ -1,0 +1,76 @@
+---
+geometry: "left=2in,right=1in,top=1in,bottom=1in"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  pdf_document:
+    extra_dependencies: float
+link_citations: yes
+header-includes: \usepackage{setspace}\doublespacing\setlength{\parindent}{4em}\setlength{\parskip}{0em}
+# bibliography: references.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Resilience Chapter
+
+## Introduction
+
+This chapter focuses on the concept of post-disaster resilience, or how effectively disaster-affected communities are able to rebuild in the aftermath of a natural disaster. As outlined in the theory section, @gallopin2006linkages defines resilience as a community's ability to respond positively to a disaster and rebuild effectively. Resilience is the "mid-point" of the three measures of disaster response, a medium-term outcome that indicates the strength of a community's rebuilding process. Effective rebuilding can be measured in two ways: 1) how long it takes for communities to rebuild, 2) how well communities are rebuilt. While one may argue that the cost of rebuilding is another important outcome variable to measure resilience, I choose not to focus on it because of the overall variability of prices and also because greater reconstruction costs could be a sign of corruption and mismanagement, or they could indicate investments in improved technology or building techniques.
+
+Unlike the number of deaths as measured last chapter, duration of rebuilding is a less obvious variable. Post-disaster rebuilding and reconstruction typically happens over a long period of time and is initiated by a number of different groups including home and business owners, domestic and foreign governments, charities, aid organizations, NGOs, etc. [INSERT CITATION]. This diversity of support for rebuilding makes it difficult to know when reconstruction has been completed, especially when in some cases, post-disaster reconstruction is seen as an opportunity to build more and better structures than existed previously @crespo2008natural. To measure how long it takes for communities to rebuild in the aftermath of a disaster, I use two datasets from the AidData lab at William and Mary University. These datasets include information on foreign aid projects including their duration, and how successful they were at achieving their goal. While the dataset includes a number of different types of aid projects, I focus only on those that are related to post-disaster reconstruction. While not an obvious measure of post-disaster resilience, given the scarcity of measures for this outcome, duration and quality of post-disaster rebuilding serves as a proxy. There are a number of different types of foreign aid but this dataset and chapter only focus data on project-based aid. Project aid is a type of foreign aid where money is used for a particular project whether it be building a hospital or an irrigation system [https://www.intelligenteconomist.com/foreign-aid/, https://www.rand.org/content/dam/rand/pubs/papers/2008/P3283.pdf]. Importantly, because project-based aid is given to achieve a particular end, it is reasonable to assume that the duration of a project, in the case of this thesis, indicates how long it took for the specified area to be rebuilt.
+
+While it is reasonable to assume that the duration of rebuilding related aid projects provides insight into how communities rebuild after a disaster, it is an imperfect measure. Unlike Chapter 1 (and upcoming Chapter 3), where all nations regardless of income are considered, because of the nature of the data used in this chapter, I focus solely on countries that receive foreign aid. While these countries are not representative of the whole world, there is significant variation in state capacity among included nations (Range: -2.11 to 1.56), meaning that the role of the state can still be observed. Additionally, rebuilding projects typically focus on either a certain area or a specific public building, meaning that a single project in an area may not tell the whole story of a community's rebuilding process. Despite this, given the large quantity of aid data available across 46 different countries from 1997 to 2016, it is reasonable to infer that the relationships observed in this analysis may be applicable to the greater rebuilding process. Importantly, this chapter uses state capacity as the main independent variable, seeking to observe the relationship between the state and the rebuilding process. While many aid projects are initiated by outside entities, the fact remains that national governments are still in control of their territories and how they govern dictates the pre-conditions of these aid projects, meaning that even if the state is not running the reconstruction projects, it's capacity may still impact project outcomes.
+
+The following pages of this chapter explain in greater depth the data sources and statistical methods used in this chapter, the results of my analyses, and my interpretations of my results.
+
+
+## Explanation of Data Sources and Measures
+  `
+To test my hypothesis that greater state capacity is associated with greater resilience, I use four datasets: the @hanson2013leviathan dataset which measures state capacity and its components, the EM-DAT disaster dataset (both used previously in Chapter 1), and the two AidData datasets: the Core Project-level dataset, and the Project performance dataset. The two main dependent variables measured in this chapter: duration of rebuilding project and success of rebuilding project are both sourced from the AidData dataset. The duration variable is calculated using the Core Project-level dataset which includes the dates when the project began and when it ended. To create the project duration variable I subtract the project end date from the project start date to find the number of days it took to complete the project. Only completed projects are included in the dataset so the duration is not biased by ongoing projects. The Core Project-level dataset includes over 1.5 million total aid projects, and 4,375 projects related to post-disaster reconstruction. While the Project Performance dataset actually includes a project duration variable, I choose to create my own with the original data because the project performance dataset includes only 20,000 original observations and just 91 observations of post-disaster reconstruction projects. This data will still be interesting and useful for measuring project quality --- results should be taken with a grain of salt due to the very small sample size --- but given it's greater scope, I choose to use the Core Project-level data to measure project duration. 
+
+Regarding project performance, the project success variable is on a scale of 1 to 6. In the original dataset, a 1 indicates that the project was highly satisfactory while a 6 denotes a highly unsatisfactory project. For ease of analysis, I switched these values so that the greater the rating, the greater the success. Additionally, both AidData datasets include information on both the donor and recipient country. Controlling for the donor country is important to ensure that the results of the analysis are not biased by an over representation of a given aid organization that may be better or worse than others at delivering aid.
+
+As in Chapter 1, state capacity is measured using the @hanson2013leviathan dataset and includes a comprehensive measure of overall state capacity and additional variables that measure the three sub components of state capacity: administrative capacity, coercive capacity, and extractive capacity. This chapter also uses the EM-DAT disaster dataset to add additional controls for the type of disaster and the magnitude of that disaster. Please see the end of Chapter 2 for a more comprehensive explanation of these measures
+
+
+## Methods
+
+To explore the relationship between state capacity and a country's 
+
+
+$$
+\text{Project Duration} = \beta_0 + \beta_1*Capacity + \beta_2*\text{GDP percapita} + \beta_3*\text{Donor Source}
+$$
+
+$$
+\text{Project Satisfaction} = \beta_0 + \beta_1*Capacity + \beta_2*\text{GDP percapita} + \beta_3*\text{Donor Source}
+$$
+
+**Additional Model Including Disaster Type and Magnitude**
+\begin{equation}
+\begin{split}
+\text{Project Duration}&= \beta_0 + \beta_1 * \text{Capacity} + \beta_2 * \text{GDP percapita} + \beta_3 * \text{Donor Source} + \\
+& \beta_4 * \text{Disaster Type} + \beta_5 * \text{Disaster Magnitude} \\
+\end{split}
+\end{equation}
+
+
+## Results
+
+**EM-DAT and disaster matched data**
+\input{Ch2_Exhibits/all_data_cap.tex}
+
+**Donors with all disaster data**
+\input{Ch2_Exhibits/donors.tex}
+
+**No Disaster data - just projects**
+\input{Ch2_Exhibits/caps.tex}
+
+**Quality of Projects**
+\input{Ch2_Exhibits/quality.tex}
+
+**State Capacity Components with un-matched data (no disasters)**
+\input{Ch2_Exhibits/dif_capacity.tex}
+

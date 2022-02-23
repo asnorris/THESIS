@@ -55,6 +55,8 @@ sc_complex <- table %>%
 
 ```{r}
 
+require(tidyverse)
+
 # merge together state capacity data
 # sc <- full_join(sc_complex, sc_simp)
 
@@ -98,7 +100,19 @@ cap <- read_xlsx("Data/fisunoglu2020.xlsx")
 
 chap1 <- left_join(chap1, cap, by = c("year", "country"))
 
-write.csv(chap1, "chapter1_cleaned.csv")
+
+# created lagged capacity variable - because there might be reverse causality with disasters changing state capacity - had to do outside of dataset because 
+lagged_cap <- chap1 %>%
+  select(year, country, capacity) %>%
+  distinct() %>%
+  group_by(country) %>%
+  arrange(year) %>%
+  mutate(prev_year_cap = lag(capacity))
+
+chap1 <- left_join(chap1, lagged_cap) 
+
+
+write_csv(chap1, "chapter1_cleaned.csv")
   
 ```
 
