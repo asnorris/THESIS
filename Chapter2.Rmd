@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Resilience Chapter
 
-## Introduction
+# Introduction
 
 This chapter focuses on the concept of post-disaster resilience, or how effectively disaster-affected communities are able to rebuild in the aftermath of a natural disaster. As outlined in the theory section, @gallopin2006linkages defines resilience as a community's ability to respond positively to a disaster and rebuild effectively. Resilience is the "mid-point" of the three measures of disaster response, a medium-term outcome that indicates the strength of a community's rebuilding process. Effective rebuilding can be measured in two ways: 1) how long it takes for communities to rebuild, 2) how well communities are rebuilt. While one may argue that the cost of rebuilding is another important outcome variable to measure resilience, I choose not to focus on it because of the overall variability of prices and also because greater reconstruction costs could be a sign of corruption and mismanagement, or they could indicate investments in improved technology or building techniques.
 
@@ -26,51 +26,104 @@ While it is reasonable to assume that the duration of rebuilding related aid pro
 The following pages of this chapter explain in greater depth the data sources and statistical methods used in this chapter, the results of my analyses, and my interpretations of my results.
 
 
-## Explanation of Data Sources and Measures
-  `
-To test my hypothesis that greater state capacity is associated with greater resilience, I use four datasets: the @hanson2013leviathan dataset which measures state capacity and its components, the EM-DAT disaster dataset (both used previously in Chapter 1), and the two AidData datasets: the Core Project-level dataset, and the Project performance dataset. The two main dependent variables measured in this chapter: duration of rebuilding project and success of rebuilding project are both sourced from the AidData dataset. The duration variable is calculated using the Core Project-level dataset which includes the dates when the project began and when it ended. To create the project duration variable I subtract the project end date from the project start date to find the number of days it took to complete the project. Only completed projects are included in the dataset so the duration is not biased by ongoing projects. The Core Project-level dataset includes over 1.5 million total aid projects, and 4,375 projects related to post-disaster reconstruction. While the Project Performance dataset actually includes a project duration variable, I choose to create my own with the original data because the project performance dataset includes only 20,000 original observations and just 91 observations of post-disaster reconstruction projects. This data will still be interesting and useful for measuring project quality --- results should be taken with a grain of salt due to the very small sample size --- but given it's greater scope, I choose to use the Core Project-level data to measure project duration. 
+# Explanation of Data Sources and Measures
+  
+To test my hypothesis that greater state capacity is associated with greater resilience, I use four datasets: the @hanson2013leviathan dataset which measures state capacity and its components, the EM-DAT disaster dataset (both used previously in Chapter 1), and the two AidData datasets: the Core Project-level dataset, and the Project performance dataset. The two main dependent variables measured in this chapter: duration of rebuilding project and success of rebuilding project are both sourced from the AidData dataset. The duration variable is calculated using the Core Project-level dataset which includes the dates when the project began and when it ended. To create the project duration variable I subtract the project end date from the project start date to find the number of days it took to complete the project. Only completed projects are included in the dataset so the duration is not biased by ongoing projects. The Core Project-level dataset includes over 1.5 million total aid projects, and 4,375 projects related to post-disaster reconstruction. While the Project Performance dataset actually includes a project duration variable, I choose to create my own with the original data because the project performance dataset includes only 20,000 original observations and just 91 observations of post-disaster reconstruction projects. This project performance dataset is still interestng and useful for measuring project quality --- results should be taken with a grain of salt due to the very small sample size --- but given it's greater scope, I choose to use the Core Project-level data to measure project duration. 
 
 Regarding project performance, the project success variable is on a scale of 1 to 6. In the original dataset, a 1 indicates that the project was highly satisfactory while a 6 denotes a highly unsatisfactory project. For ease of analysis, I switched these values so that the greater the rating, the greater the success. Additionally, both AidData datasets include information on both the donor and recipient country. Controlling for the donor country is important to ensure that the results of the analysis are not biased by an over representation of a given aid organization that may be better or worse than others at delivering aid.
 
-As in Chapter 1, state capacity is measured using the @hanson2013leviathan dataset and includes a comprehensive measure of overall state capacity and additional variables that measure the three sub components of state capacity: administrative capacity, coercive capacity, and extractive capacity. This chapter also uses the EM-DAT disaster dataset to add additional controls for the type of disaster and the magnitude of that disaster. Please see the end of Chapter 2 for a more comprehensive explanation of these measures
+As in Chapter 1, state capacity is measured using the @hanson2013leviathan dataset and includes a comprehensive measure of overall state capacity and additional variables that measure the three sub components of state capacity: administrative capacity, coercive capacity, and extractive capacity. This chapter also uses the EM-DAT disaster dataset to add additional controls for the type of disaster and the magnitude of that disaster. Because this chapter focuses on rebuilding after disasters, disaster events that do not cause material destruction --- droughts, epidemics, and extreme temperatures --- are not included. Please see the end of Chapter 2 for a more comprehensive explanation of these disaster and state capacity measures.
+
+# Methods
+
+To explore the relationship between state capacity and resilience I focus on three main dependent variables: project duration, log project duration, and project satisfaction. To explore these relationships I must first combine my state capacity, disaster, and aid project data.
+
+## Merging datasets
+
+In order to analyze the relationship between state capacity and resilience, the aid data dataset must be combined with the capacity and disaster datasets. The aid data and state capacity datasets can easily be merged together by matching on the country and year variables. While this merged data contains both the dependent variable and independent state capacity variables, it does not include disaster data. The type of disaster, and in particular the magnitude of the disaster that an aid project is rebuilding after while not main explanatory variables are important controls. It is highly plausible that the disaster type and severity of the disaster impacts the length and success of a project. 
+
+Unlike the capacity and aid data, the aid data and EM-DAT disaster data cannot easily be merged because there is no specific disaster variable^[The AidData does include a project title but given that these aid projects are led and financed by countries and institutions across the world many are in foreign languages, making it difficult in the context of this project to discern what exactly the aid is being used for.] in the aid dataset and it is very unlikely that the date variables exactly match --- aid projects that are associated with a certain disaster do not necessarily start, and most likely do not start, on the same day that the disaster starts. To account for this, I merge the aid dataset with the disaster data, linking all projects and events in a country in a given year. 
+
+To ensure that projects beginning before a disaster which could not possibly be in response to them are not included, I remove all projects that began before the beginning of a disaster. Even with these projects removed, there are still a number of instances in which more than one disaster is attributed to an aid project. To further ensure that aid projects are associated with the correct disaster, I create a variable indicating the number of days after a disaster an aid project began. There is no uniform amount of time between when a natural disaster happens and when a foreign-aid financed reconstruction project begins but the response is not immediate but also not several months later. While not a foreign aid project, in developing contexts, it typically takes insurance companies two to six weeks to assess damages and issue compensation to policy holders[@drury2005politics]. It is this nebulous nature of the time between disaster and aid project that resulted in the creation of three datasets, each with a different criteria for the number of days until an aid project starts: the narrow definition which includes all aid projects that begin within 14 days of a disaster, a medium definition which includes projects beginning within 31 of the disaster, and a broad definition with projects beginning within 90 days of the disaster. With each measurement comes a trade off where as the number of days decreases the certainty of the project being associated with the disaster increases but the number of observations decreases.^[Ideally I would be able to be certain that each aid project was intended to be a response to the disaster it is associated with but given the data and variables available, this is not possible. This uncertainty is largely an issue for larger countries where it is possible for multiple areas of the country to experience different disasters in the same time period. Because the data merging is done on the country-level, this makes it more difficult to discern which aid projects were intended for which disasters. I am unable to control for this but it is important to recognize this limitation when observing the results.]
 
 
-## Methods
+## Models and Justification
+### Project Length Model
 
-To explore the relationship between state capacity and a country's 
+With the above data, I am able to explore the relationships between state capacity and the three outcome variables: project length, log project length, and project satisfaction. Because project length is a count variable, I use a negative binomial model to measure the relationship. While Poisson models are also suited to interpret count variables, poisson models assume that the dependent variable mean and variance are equal. In the case of the project length variable, the variance (25947.1) is over 400 times greater than the mean (503.8), indicating that the data does not meet the parameters for a Poisson model and if one was used, would suffer from over dispersion. To measure the relationship between state capacity and project length, I run three negative binomial models: one with no disaster-related controls, one controlling for disaster type, and one controlling for disaster type and magnitude. Each of the three models have their strengths and tradeoffs. As the number of control variables increases the number of observations decreases, meaning that there is less information to observe and learn from, but that being said, I believe that the strength and type of disaster are important variables to include when observing the rebuilding process.
 
+For the two models that include disaster-related control variables, I employ the "medium" disaster merging definition where all aid projects that begin within 31 days or a month of the disaster are attributed to that disaster. I chose the medium definition because it is in fact a "happy medium", including more projects than the 14-day definition, but providing more focus and specificity than the 90-day definition. While I focus on the medium definition, I also explore the narrow and broad merging definitions in the appendix. In addition to the disaster-related controls, each model also controls for the log GDP per capita of the country in which the aid project and disaster take place and who the donor behind the aid project is. The following estimation equation depicts the negative binomial model including all listed control variables.
 
-$$
-\text{Project Duration} = \beta_0 + \beta_1*Capacity + \beta_2*\text{GDP percapita} + \beta_3*\text{Donor Source}
-$$
-
-$$
-\text{Project Satisfaction} = \beta_0 + \beta_1*Capacity + \beta_2*\text{GDP percapita} + \beta_3*\text{Donor Source}
-$$
-
-**Additional Model Including Disaster Type and Magnitude**
 \begin{equation}
 \begin{split}
-\text{Project Duration}&= \beta_0 + \beta_1 * \text{Capacity} + \beta_2 * \text{GDP percapita} + \beta_3 * \text{Donor Source} + \\
+\text{Project Duration}&= \beta_0 + \beta_1 * \text{Capacity} + \beta_2 * \text{GDP percapita} + \beta_3 * \text{Donor} + \\
 & \beta_4 * \text{Disaster Type} + \beta_5 * \text{Disaster Magnitude} \\
 \end{split}
 \end{equation}
 
+In addition to the general state capacity variable, using the same techniques and modelling decisions as above, I explore the relationship between project length and the three state capacity components: administrative capacity, coercive capacity, and extractive capacity. The following estimation equation depicts this model with all control variables
 
-## Results
+\begin{equation}
+\begin{split}
+\text{Project Duration}&= \beta_0 +  \beta_1 * \text{Administrative Capacity} + \beta_2 * \text{Coercive Capacity} + \\
+&\beta_3 * \text{Extractive Capacity} + \beta_3 * \text{GDP percapita} + \\
+&\beta_4 * \text{Donor} + \beta_5 * \text{Disaster Type} + \beta_6 * \text{Disaster Magnitude} \\
+\end{split}
+\end{equation}
 
-**EM-DAT and disaster matched data**
+### Log Project Length Model
+
+While understanding the relationship between state capacity and project length is informative, to better understand the relationship, it is beneficial to observe project length in its log form. Because the mean mean project length (503.7) is greater than the median (364), the distribution is positively skewed. By taking the log of this variable I am better able to fit it to a linear model. Using all of the same modeling decisions as above, I run three different linear models with different controls explaining the relationship between state capacity and log project length, and then do the same but replacing state capacity with its three components.
+
+### Project Satisfaction Model
+
+In addition to the two measures of project length, I also explore the relationship between state capacity and project satisfaction. The project satisfaction variable from AidData includes information on how satisfied donors are with the aid project that they are implementing. Because of the already low sample size of disaster-related aid projects with satisfaction information, disaster-related control variables are not added. Because satisfaction is rated on a scale from 1 to 6 with 6 indicating that the donor is highly satisfied, I use a linear model to measure this relationship, controlling for log GDP percapita and importantly, the aid donor. I run this model twice, once with the broad capacity measure and then again using the three components of state capacity.
+
+### Donor Effects  Model
+
+While not state capacity, it is important to observe other variables that may impact project length. While the donor of the aid is included as a control in all of the above-mentioned models, it is interesting to observe the variable on its own. Using two models --- negative binomial for project length, and linear for log project length --- I observe the relationship between donors and the two project length outcome variables. Because there are so many donors included in the dataset for ease of observation, I focus only on the six with the most aid projects. To ensure that recipient country effects are not influencing the results I control for the recipient of the aid. I only focus on the project length variables for donor effects. Project satisfaction is rated by the donors themselves so it would not be fruitful to conduct cross-donor comparisons for that dependent variable.
+
+
+# Results
+## State Capacity and Project Length
+
 \input{Ch2_Exhibits/all_data_cap.tex}
 
-**Donors with all disaster data**
-\input{Ch2_Exhibits/donors.tex}
+Table 1 shows output from six models explaining the relationship between state capacity and both gross project length and log project length. Observing the results from the negative binomial results, the model with no disaster-related control variables finds a negative but non-significant relationship between state capacity and gross project length. Both models with disaster-related control variables (disaster type and disaster magnitude) find slightly statistically significant (p<0.1) positive relationships between state capacity and project length, meaning that greater state capacity is associated with a longer project duration. These findings do not support my hypothesis that greater state capacity is associated with quicker rebuilding periods. Despite this relationship, the regression coefficients are both less than 0.5, meaning that a one unit increase in state capacity is associated with less than half a day longer reconstruction time. One possible explanation for this positive relationship is that countries with greater state capacity may have more regulatory bodies that need to be involved with the project, making it take longer to complete. This would be an interesting topic for further research.
 
-**No Disaster data - just projects**
-\input{Ch2_Exhibits/caps.tex}
+Interestingly, when observing log project length as the dependent variable as models 4 through 6 do in Table 1, the model signs remain consistent with the gross project length models but the significance does not. The first model which includes no disaster-related control variables finds a statistically significant (p<0.01) negative relationship between state capacity and log project length. This means that as state capacity increases, log project length decreases. This finding supports my hypothesis. Models 5 and 6, like 2 and 3 find a positive relationship between state capacity and log project length but unlike models 2 and 3, these results are not significant, meaning they cannot be read into. This finding neither supports or does not support my hypothesis.
 
-**Quality of Projects**
+Table [INSERT NUMBER LATER] in the appendix shows the results for both gross and log project length for the 14-day and 90-day merged data. While most results are statistically insignificant, the negative binomial model using the broad 90-day data finds a slightly significant (p<0.05 for the Model 1 and p<0.1 for Model 2) positive relationship between state capacity and gross project length. Despite this, both coefficients are less than 0.2, suggesting that if there is a positive relationship that the relationship is not practically significant.
+
+## State Capacity Components and Project Length
+\input{Ch2_Exhibits/3cap.tex}
+
+Table 2 shows output from six models explaining the relationship between the three components of state capacity and both gross project length and log project length. The negative binomial project length models (Models 1, 2, & 3) have very few significant results. Model 1, the model with no disaster-related controls finds a moderately significant (p<0.05) positive relationship between extractive capacity and project length. Model 3 which controls for both disaster type and disaster magnitude finds a slightly significant (p<0.1) negative relationship between coercive capacity and project length. While none of the results for adaptive capacity in models 1-3 are significant, they are all negative, suggesting that there may be a negative relationship.
+
+Models 4-6 all measure log project length as the dependent variable. Interestingly, all three models find a statistically significant (Models 1 & 3 p<0.01, Model 2 p<0.05) negative relationship between administrative capacity and log project length. This finding supports my hypothesis that greater state capacity is associated with greater resilience to disasters. Both models that include disaster-related controls also find statistically significant (Model 4 p<0.01, Model 5 p<0.05) negative relationships between coercive capacity and log project length of comparable size to the administrative capacity coefficients. Both of these findings make intuitive sense. Countries with stronger bureaucracies (administrative capacity) should be better able to facilitate rebuilding projects even if they themselves are not the ones organizing the project. Similarly, a country's coercive capacity, measured as the percent of the population serving in the military indicates a nation's ability to compel its citizens to act. It seems likely that being able to mobilize people into working on rebuilding projects would increase the speed at which they are completed.
+
+The data from the narrow and broad merging definitions (See Table [??] in Appendix) is either insignificant or supports the findings mentioned above. The broad merging definition, the inclusion of aid projects that begin within 90 days of the disaster found a statistically significant (p<0.01) negative relationship between adaptive capacity and log project length. 
+
+## State Capacity and Project Quality
+
 \input{Ch2_Exhibits/quality.tex}
 
-**State Capacity Components with un-matched data (no disasters)**
-\input{Ch2_Exhibits/dif_capacity.tex}
+Table 3 includes output from two linear models used to explain variation in project quality ratings. Model 1 finds a statistically significant (p<0.01) negative relationship between state capacity and project satisfaction, suggesting that greater state capacity in the country where the aid project is taking place is associated with decreased project satisfaction by the donor. This finding does not support my hypothesis that greater state capacity would increase project satisfaction. Project satisfaction is measured by how satisfied the donor is with the project, it would be interesting if there were a variable measuring the project satisfaction of the recipient. One possible explanation of this relationship is that countries with greater state capacity may be more involved with the rebuilding projects, intervening in ways that they deem necessary but donors do not. Model 2 which includes the components of state capacity as explanatory variables does not include any significant findings. This may be due to the small sample size (178).
+
+## Donor Effects
+
+\input{Ch2_Exhibits/donors.tex}
+
+Table 4 includes output from two models exploring the relationship between the 6 most prevalent donors and project length, one measuring project length and the other measuring log project length. While every model in this chapter controls for the donor of the aid project, they do not present and explore this information. The baseline donor value in Table 4 is the United States, meaning that the regression coefficients indicate the that country's effect on the outcome variable relative to the United State's effect. Model 1 finds that aid projects conducted by Austria, Spain, Switzerland, and the UK all are significantly (p<0.01) than those conducted by the US. Norway has a negative relationship but it is not significant. Model 2 which measures log project length finds significant (p<0.01) results for all listed countries, finding that all countries except for Norway have projects with longer durations than the US. 
+
+While this thesis almost exclusively focuses on the relationship between state capacity and different disaster-related outcomes, it is important to note that state capacity is not everything and that many other variables can and do impact disaster-related deaths, resilience, and adaptive capacity. The significance of the donor results serves as an important reminder that other non-state variables also need to be observed when seeking to understand what makes for a positive disaster response.
+
+
+# Appendix
+
+**State Capacity: Narrow and Broad merging definitions**
+\input{Ch2_Exhibits/14-90cap_appendix.tex}
+
+**State Capacity Components: Narrow and Broad merging definitions**
+\input{Ch2_Exhibits/14-90cap_3types_appendix.tex}
 

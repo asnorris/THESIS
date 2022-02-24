@@ -1,0 +1,84 @@
+---
+title: "Chapter 2 Code"
+author: "Alexandra Norris"
+date: "1/19/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+```{r}
+
+# read in aid data
+
+aid <- read_csv("AidDataCore_ResearchRelease_Level1_v3.1/AidDataCoreFull_ResearchRelease_Level1_v3.1.csv") %>%
+  filter(crs_purpose_name == "Reconstruction relief") %>%
+  mutate(country = recipient)
+  # select for needed variab
+
+
+# sample so I can actually work with the data
+small_aid <- sample_n(aid,500)
+
+
+```
+
+```{r}
+# aid data sector name is the variable that 
+
+
+
+
+
+
+small_aid %>%
+  # filter(aiddata_sector_name == "Reconstruction relief")
+  filter(crs_purpose_name == "Reconstruction relief")
+
+
+
+
+
+
+
+```
+
+```{r}[=]
+
+# used function from internet to do nearest neighbor joining
+
+match_by_group_date <- function(df1, df2, grp, datecol) {
+  
+  grp1 <- df1 %>% pull({{grp}}) %>% unique()
+  grp2 <- df2 %>% pull({{grp}}) %>% unique()
+  
+  li <-
+  lapply(intersect(grp1, grp2), function(tt) {
+    d1 <- filter(df1, {{grp}}== tt)
+    d2 <- filter(df2, {{grp}}==tt) %>% mutate(indices = 1:n())
+    d2_date <- d2 %>% pull({{datecol}}) %>% as.POSIXct()
+    print(d2_date)
+    d1 <- mutate(d1, indices = map_dbl({{datecol}}, function(d) which.min(abs(d2_date - as.POSIXct(d)))))
+    
+    left_join(d1,d2, by=c(quo_name(enquo(grp)), "indices"))
+  })
+  
+  # bind rows
+  return(bind_rows(li))
+}
+
+
+ch1 %>%
+  select()
+
+joined_data <- match_by_group_date(aid, ch1, country, year)
+
+joined <- left_join(aid, ch1, by = c("country", "year"))
+
+```
+
+
